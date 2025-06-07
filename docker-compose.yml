@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smk-saksi
+    ports:
+      - "8001:80"
+    volumes:
+      - ./:/var/www/html:cached              
+      - /var/www/html/vendor               
+      - /var/www/html/storage                
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html/public
+    command: >
+     bash -c "
+     composer install --no-interaction --prefer-dist &&
+     chown -R www-data:www-data storage bootstrap/cache &&
+     chmod -R 775 storage bootstrap/cache &&
+     chown -R www-data:www-data storage/logs &&
+     chmod -R 775 storage/logs &&
+     apache2-foreground
+      "
+    restart: unless-stopped
+    networks:
+      - shared
+
+networks:
+  shared:
+    external: true

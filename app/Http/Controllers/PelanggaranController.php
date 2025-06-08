@@ -6,7 +6,7 @@ use App\Models\Siswa;
 use App\Models\KelasSiswa;
 use App\Models\Pelanggaran;
 use Illuminate\Http\Request;
-use App\Models\skor_pelanggaran;
+use App\Models\Skor_Pelanggaran;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -27,7 +27,7 @@ class PelanggaranController extends Controller
     public function create()
     {
         $siswa = Siswa::has('kelasAktif')->get();
-        $skor = skor_pelanggaran::all();
+        $skor = Skor_Pelanggaran::all();
         $pelanggaran = Pelanggaran::with(['kelasSiswa.kelas'])
                         ->latest()
                         ->get();
@@ -78,7 +78,7 @@ class PelanggaranController extends Controller
         $pelanggaran = Pelanggaran::findOrFail($id);
         $siswas = Siswa::has('kelasAktif')->get();
         $users = User::all();
-        $skors = skor_pelanggaran::all();
+        $skors = Skor_Pelanggaran::all();
 
         return view('superadmin.pelanggaran.edit', compact('pelanggaran', 'siswas', 'users', 'skors'));
     }

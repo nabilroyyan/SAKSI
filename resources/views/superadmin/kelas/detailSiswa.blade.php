@@ -142,7 +142,7 @@
                             <select class="form-select" id="bulk_id_kelas" name="id_kelas">
                                 @foreach($allKelas->where('stt', 'aktif') as $k)
                                     <option value="{{ $k->id }}">
-                                        {{ $k->tingkat }} {{ $k->jurusan->nama_jurusan }} ({{ $k->kode_kelas }})
+                                        {{ $k->tingkat }} {{ $k->jurusan->nama_jurusan }}
                                     </option>
                                 @endforeach
                             </select>

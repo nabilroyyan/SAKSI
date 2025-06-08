@@ -84,7 +84,7 @@ class MonitoringPelanggaranController extends Controller
 
         $siswaList = Siswa::all();
         $kelasList = Kelas::all();
-        $skorList = skor_pelanggaran::all();
+        $skorList = Skor_Pelanggaran::all();
 
         $totalSkor = $siswaPelanggar->pluck('total_skor', 'siswa.id');
 

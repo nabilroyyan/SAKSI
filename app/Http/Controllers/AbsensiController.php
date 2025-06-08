@@ -46,6 +46,7 @@ class AbsensiController extends Controller
         $request->validate([
             'absensi.*.kelas_siswa_id' => 'required|exists:kelas_siswa,id',
             'absensi.*.status' => 'required|in:hadir,sakit,izin,alpa',
+            'absensi.*.status_surat' => 'required|in:tertunda,diterima,ditolak',
             'absensi.*.catatan' => 'nullable|string',
             'absensi.*.foto_surat' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);

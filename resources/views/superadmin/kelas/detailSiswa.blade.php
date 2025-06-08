@@ -1,5 +1,3 @@
-
-
 @extends('layout.MainLayout')
 
 @section('content')

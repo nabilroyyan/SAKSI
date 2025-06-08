@@ -10,7 +10,7 @@ use App\Models\Pelanggaran;
 use Illuminate\Http\Request;
 use App\Models\TindakanSiswa;
 use App\Models\KategoriTindakan;
-use App\Models\skor_pelanggaran;
+use App\Models\Skor_Pelanggaran;
 use Illuminate\Support\Facades\Log;
 
 class MonitoringPelanggaranController extends Controller

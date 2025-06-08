@@ -140,7 +140,7 @@
                         <label for="bulk_id_kelas" class="form-label">Kelas Tujuan <span class="text-muted">(Untuk status Naik Kelas)</span></label>
                         @if($allKelas->isNotEmpty())
                             <select class="form-select" id="bulk_id_kelas" name="id_kelas">
-                                @foreach($allKelas as $k)
+                                @foreach($allKelas->where('stt', 'aktif') as $k)
                                     <option value="{{ $k->id }}">
                                         {{ $k->tingkat }} {{ $k->jurusan->nama_jurusan }} ({{ $k->kode_kelas }})
                                     </option>

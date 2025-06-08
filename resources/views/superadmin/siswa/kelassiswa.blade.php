@@ -60,7 +60,7 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ strtoupper($k->tingkat) }}</td>
                                         <td>{{ $k->jurusan->nama_jurusan }}</td>
-                                        <td>{{ $k->kelasSiswa->count() }}</td>
+                                        <td>{{ $k->kelasSiswa->where('is_active', 'aktif')->count() }}</td>
                                         <td>
                                             @can('tambah kelas-siswa')
                                             <a href="{{ route('kelas.siswa', $k->id) }}" class="btn btn-info btn-sm">Tambah Siswa</a>                                                                              

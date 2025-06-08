@@ -82,7 +82,7 @@
                                         <span class="badge bg-danger">Tidak Aktif</span>
                                     @endif
                                 </td>
-                                <td>{{ $k->kelasSiswa->count() }}</td>
+                                <td>{{ $k->kelasSiswa->where('is_active', 'aktif')->count() }}</td>
                                 <td>
                                     @can('edit kelas')                                      
                                     <a href="{{ route('kelas.edit', $k->id) }}" class="btn btn-warning btn-sm">Edit</a>                                                                            

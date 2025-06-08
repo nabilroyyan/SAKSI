@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('receiver_id');
             $table->string('title');
             $table->text('message');
+            $table->string('link')->nullable();
             $table->boolean('is_read')->default(false);
             $table->timestamps();
         });
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('notif_pendaftaran_tables');
+        Schema::dropIfExists('notif_pendaftaran');
     }
 };

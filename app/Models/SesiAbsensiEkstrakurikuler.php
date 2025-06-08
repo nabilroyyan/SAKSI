@@ -18,6 +18,13 @@ class SesiAbsensiEkstrakurikuler extends Model
 
     ];
 
+     protected $casts = [
+        'waktu_buka' => 'datetime',  // <--- TAMBAHKAN INI
+        'waktu_tutup' => 'datetime', // <--- DAN INI
+        'is_active' => 'boolean', // Ini juga praktik yang baik
+        'absensi_telah_disimpan' => 'boolean', // Ini juga praktik yang baik
+    ];
+
     public function jadwal()
     {
         return $this->belongsTo(JadwalEkstrakurikuler::class, 'jadwal_id');

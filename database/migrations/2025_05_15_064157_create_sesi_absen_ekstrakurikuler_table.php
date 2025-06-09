@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('jadwal_id')->constrained('jadwal_ekstrakurikuler')->onDelete('cascade');
             $table->foreignId('guru_pembina_id')->constrained('users')->onDelete('cascade');
-            $table->timestamp('waktu_buka');
-            $table->timestamp('waktu_tutup')->nullable();
+            $table->dateTime('waktu_buka');
+            $table->dateTime('waktu_tutup')->nullable();
             $table->boolean('is_active')->default(true);
              $table->boolean('absensi_telah_disimpan')->default(false);
             $table->timestamps();

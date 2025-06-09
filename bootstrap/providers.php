@@ -4,4 +4,5 @@ return [
     App\Providers\AppServiceProvider::class,
     Spatie\Permission\PermissionServiceProvider::class,
     App\Providers\EventServiceProvider::class,
+    Ladumor\LaravelPwa\PWAServiceProvider::class,
 ];

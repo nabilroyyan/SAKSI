@@ -18,27 +18,37 @@ class AbsensiController extends Controller
     {
         $userId = Auth::id();
 
-        // Cek kelas aktif yang dipegang user ini
-        $kelas = Kelas::where('id_users', $userId)
-                      ->where('stt', 'aktif')
-                      ->first();
+        // Ambil semua kelas aktif yang dipegang user
+        $kelasList = Kelas::with('jurusan')
+                    ->where('id_users', $userId)
+                    ->where('stt', 'aktif') // pastikan hanya kelas aktif
+                    ->get();
 
-        if (!$kelas) {
+        if ($kelasList->isEmpty()) {
             return redirect()->back()->with('error', 'Anda bukan wali kelas aktif.');
         }
 
         $tanggalHariIni = Carbon::today()->toDateString();
 
-        // Ambil siswa di kelas ini yang belum diabsen hari ini
-        $siswaBelumAbsen = KelasSiswa::with('siswa')
-            ->where('id_kelas', $kelas->id)
+        // Ambil semua ID kelas yang dipegang user
+        $kelasIds = $kelasList->pluck('id')->toArray();
+
+        // Ambil siswa dari kelas tersebut yang aktif dan belum absen hari ini
+        $siswaBelumAbsen = KelasSiswa::with('siswa', 'kelas')
+            ->whereIn('id_kelas', $kelasIds)
+            ->where('is_active', 'aktif')
             ->whereDoesntHave('absensi', function ($query) use ($tanggalHariIni) {
                 $query->where('hari_tanggal', $tanggalHariIni);
             })
             ->get();
 
-        return view('superadmin.absensi.create', compact('siswaBelumAbsen', 'tanggalHariIni'));
+        return view('superadmin.absensi.create', [
+            'siswaBelumAbsen' => $siswaBelumAbsen,
+            'tanggalHariIni' => $tanggalHariIni,
+            'kelasList' => $kelasList // opsional: bisa ditampilkan di view
+        ]);
     }
+
 
     // Menyimpan data absensi
     public function store(Request $request)
@@ -46,17 +56,22 @@ class AbsensiController extends Controller
         $request->validate([
             'absensi.*.kelas_siswa_id' => 'required|exists:kelas_siswa,id',
             'absensi.*.status' => 'required|in:hadir,sakit,izin,alpa',
-            'absensi.*.status_surat' => 'required|in:tertunda,diterima,ditolak',
             'absensi.*.catatan' => 'nullable|string',
             'absensi.*.foto_surat' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
-        // Validasi tambahan: jika status sakit/izin, foto wajib
-        foreach ($request->absensi as $index => $data) {
-            if (in_array($data['status'], ['sakit', 'izin']) && !$request->hasFile("absensi.$index.foto_surat")) {
-                return back()->withErrors([
-                    "absensi.$index.foto_surat" => "Foto surat wajib diunggah jika status sakit atau izin."
-                ])->withInput();
+        $absensiData = $request->absensi;
+
+        foreach ($absensiData as $index => $data) {
+            if (in_array($data['status'], ['sakit', 'izin'])) {
+                // Set status_surat menjadi 'tertunda' jika sakit atau izin
+                $absensiData[$index]['status_surat'] = 'tertunda';
+
+                if (!$request->hasFile("absensi.$index.foto_surat")) {
+                    return back()->withErrors([
+                        "absensi.$index.foto_surat" => "Foto surat wajib diunggah jika status sakit atau izin."
+                    ])->withInput();
+                }
             }
         }
 
@@ -95,22 +110,34 @@ class AbsensiController extends Controller
         $userId = Auth::id();
         $tanggalHariIni = Carbon::today()->toDateString();
 
-        $kelas = Kelas::where('id_users', $userId)->where('stt', 'aktif')->first();
+        // Ambil semua kelas aktif yang dipegang oleh user
+        $kelasList = Kelas::with('jurusan')
+            ->where('id_users', $userId)
+            ->where('stt', 'aktif')
+            ->get();
 
-        if (!$kelas) {
+        if ($kelasList->isEmpty()) {
             return redirect()->back()->with('error', 'Anda bukan wali kelas aktif.');
         }
 
-        $riwayat = Absensi::with('siswa')
+        $idKelasList = $kelasList->pluck('id')->toArray();
+
+        $riwayat = Absensi::with(['kelasSiswa.siswa', 'petugas'])
             ->where('hari_tanggal', $tanggalHariIni)
             ->where('id_users', $userId)
-            ->whereHas('kelasSiswa', function ($q) use ($kelas) {
-                $q->where('id_kelas', $kelas->id);
+            ->whereHas('kelasSiswa', function ($q) use ($idKelasList) {
+                $q->whereIn('id_kelas', $idKelasList);
             })
+            ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('superadmin.absensi.riwayat', compact('riwayat', 'tanggalHariIni'));
+        return view('superadmin.absensi.riwayat', [
+            'riwayat' => $riwayat,
+            'tanggalHariIni' => $tanggalHariIni,
+            'kelasList' => $kelasList // mengirim semua kelas
+        ]);
     }
+
 
     public function hapusAbsensi($id)
     {

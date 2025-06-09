@@ -22,7 +22,7 @@ class KelasSiswa extends Model
         'id_kelas',
         'status',
         'is_active',
-        'tahun_ajaran'
+        'periode_id'
     ];
 
     protected $casts = [

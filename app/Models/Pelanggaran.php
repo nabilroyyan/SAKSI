@@ -35,7 +35,7 @@ class Pelanggaran extends Model
         return $this->belongsTo(User::class, 'id_users');
     }
 
-    public function skor_pelanggaran()
+    public function Skor_Pelanggaran()
     {
         return $this->belongsTo(Skor_Pelanggaran::class, 'id_skor_pelanggaran');
     }

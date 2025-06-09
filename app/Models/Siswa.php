@@ -29,7 +29,7 @@ class Siswa extends Model
     public function kelas()
     {
         return $this->belongsToMany(Kelas::class, 'kelas_siswa', 'id_siswa', 'id_kelas')
-                    ->withPivot('status', 'is_active', 'tahun_ajaran')->withTimestamps();
+                    ->withPivot('status', 'is_active', 'periode_id')->withTimestamps();
     }
 
     public function kelasAktif()

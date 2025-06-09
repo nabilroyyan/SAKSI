@@ -110,17 +110,16 @@ class SiswaController extends Controller
 
     public function showKelasSiswa(Request $request)
     {
-        $tingkat = $request->get('tingkat');
+        // Set tingkat default ke 'X'
+        $tingkat = $request->get('tingkat', 'X');
 
         $kelas = Kelas::with(['jurusan', 'kelasSiswa' => function ($q) {
-            $q->where('is_active', 'aktif')->count(); // ambil siswa yang aktif saja
+            $q->where('is_active', 'aktif');
         }])
-        ->when($tingkat, function ($query) use ($tingkat) {
-            return $query->where('tingkat', $tingkat);
-        })
+        ->where('tingkat', $tingkat)
         ->get();
 
-        return view('superadmin.siswa.kelassiswa', compact('kelas','tingkat'));
+        return view('superadmin.siswa.kelassiswa', compact('kelas', 'tingkat'));
     }
 
     public function showSiswa($id)
@@ -144,7 +143,7 @@ class SiswaController extends Controller
         ]);
 
         $kelas = Kelas::findOrFail($kelasId);
-        $periode = Periode::where('is_active', true)->first();
+        $periode = Periode::where('is_active', 'aktif')->first();
 
         if (!$periode) {
             return redirect()->back()->with('error', 'Periode aktif tidak ditemukan.');
@@ -155,7 +154,7 @@ class SiswaController extends Controller
                 [
                     'id_kelas' => $kelasId,
                     'id_siswa' => $siswaId,
-                    'periode_id' => $periode->id
+                    'periode_id' => $periode->id, // hanya periode yang is_active = aktif
                 ],
                 [
                     'status' => $request->status,

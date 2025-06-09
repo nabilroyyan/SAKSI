@@ -68,6 +68,7 @@ use App\Http\Controllers\MonitoringPelanggaranController;
 
             // Naikkan siswa secara bulk (multiple)
             Route::post('/kelas/naikkan-bulk-siswa', [KelasController::class, 'naikkanBulkSiswa'])->name('kelas.naikkanBulkSiswa')->middleware('permission:naik kelas');
+            Route::post('/kelas/bulk-periode', [KelasController::class, 'bulkPeriode'])->name('kelas.bulkPeriode');
             Route::delete('/kelas/hapus-siswa/{id}', [KelasController::class, 'hapusSiswa'])->name('kelas.hapusSiswa')->middleware('permission:hapus-siswa kelas');
 
         });

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Log;
 use App\Models\Kelas;
 use App\Models\Siswa;
 use App\Models\Tindakan;
@@ -11,103 +12,102 @@ use Illuminate\Http\Request;
 use App\Models\TindakanSiswa;
 use App\Models\KategoriTindakan;
 use App\Models\Skor_Pelanggaran;
-use Illuminate\Support\Facades\Log;
 
 class MonitoringPelanggaranController extends Controller
 {
-    public function index(Request $request)
-    {
-        $kategoriTindakan = KategoriTindakan::all();
+  public function index(Request $request)
+{
+    $kategoriTindakan = KategoriTindakan::all();
 
-        $query = Pelanggaran::with([
-            'siswa',
-            'kelasSiswa.kelas.jurusan',
-            'skor_pelanggaran',
-            'petugas'
-        ])
-        ->whereHas('kelasSiswa', function ($q) {
-            $q->where('is_active', 'aktif');
+    $query = Pelanggaran::with([
+        'siswa',
+        'kelasSiswa.kelas.jurusan',
+        'skor_pelanggaran',
+        'petugas'
+    ])
+    ->whereHas('kelasSiswa', function ($q) {
+        $q->where('is_active', 'aktif');
+    });
+
+    // Filter berdasarkan nama siswa
+    if ($request->filled('nama_siswa')) {
+        $query->whereHas('siswa', function ($q) use ($request) {
+            $q->where('nama_siswa', 'like', '%' . $request->nama_siswa . '%');
         });
-
-        // Filter berdasarkan nama siswa
-        if ($request->filled('nama_siswa')) {
-            $query->whereHas('siswa', function ($q) use ($request) {
-                $q->where('nama_siswa', 'like', '%' . $request->nama_siswa . '%');
-            });
-        }
-
-        // Filter berdasarkan jurusan
-        if ($request->filled('jurusan')) {
-            $query->whereHas('kelasSiswa.kelas.jurusan', function ($q) use ($request) {
-                $q->where('nama_jurusan', 'like', '%' . $request->jurusan . '%');
-            });
-        }
-
-        // Filter berdasarkan nama pelanggaran
-        if ($request->filled('nama_pelanggaran')) {
-            $query->whereHas('skor_pelanggaran', function ($q) use ($request) {
-                $q->where('nama_pelanggaran', 'like', '%' . $request->nama_pelanggaran . '%');
-            });
-        }
-
-        // Filter berdasarkan tanggal
-        if ($request->filled('tanggal')) {
-            $query->whereDate('tanggal', \Carbon\Carbon::parse($request->tanggal));
-        }
-
-        // Filter berdasarkan bulan
-        if ($request->filled('bulan')) {
-            $query->whereMonth('tanggal', $request->bulan);
-        }
-
-        // Filter berdasarkan tahun
-        if ($request->filled('tahun')) {
-            $query->whereYear('tanggal', $request->tahun);
-        }
-
-        // Eksekusi query
-        $pelanggaran = $query->orderBy('tanggal', 'desc')->get();
-
-        // Group data per siswa untuk tampilan
-        $siswaPelanggar = $pelanggaran->groupBy('id_siswa')->map(function ($items, $id_siswa) {
-            $firstItem = $items->first();
-            return [
-                'siswa' => $firstItem->siswa,
-                'kelas_siswa' => $firstItem->kelasSiswa,
-                'jumlah_pelanggaran' => $items->count(),
-                'total_skor' => $items->sum(function($item) {
-                    return $item->skor_pelanggaran->skor ?? 0;
-                }),
-                'pelanggaran' => $items
-            ];
-        })->sortByDesc('total_skor');
-
-        $siswaList = Siswa::all();
-        $kelasList = Kelas::all();
-        $skorList = Skor_Pelanggaran::all();
-
-        $totalSkor = $siswaPelanggar->pluck('total_skor', 'siswa.id');
-
-        // Ambil siswa yang total skornya >= 1000
-        $siswaWithWarning = $siswaPelanggar->filter(function($data) {
-            return $data['total_skor'] >= 1000;
-        });
-
-        $siswaPeringatan = $siswaWithWarning->map(function($data) {
-            return $data['siswa'];
-        })->values();
-
-        return view('superadmin/monitoring-pelanggaran.index', compact(
-            'pelanggaran',
-            'kategoriTindakan',
-            'siswaPelanggar',
-            'siswaList',
-            'kelasList',
-            'skorList',
-            'totalSkor',
-            'siswaPeringatan'
-        ));
     }
+
+    // Filter berdasarkan jurusan
+    if ($request->filled('jurusan')) {
+        $query->whereHas('kelasSiswa.kelas.jurusan', function ($q) use ($request) {
+            $q->where('nama_jurusan', 'like', '%' . $request->jurusan . '%');
+        });
+    }
+
+    // Filter berdasarkan nama pelanggaran
+    if ($request->filled('nama_pelanggaran')) {
+        $query->whereHas('skor_pelanggaran', function ($q) use ($request) {
+            $q->where('nama_pelanggaran', 'like', '%' . $request->nama_pelanggaran . '%');
+        });
+    }
+
+    // Filter berdasarkan tanggal
+    if ($request->filled('tanggal')) {
+        $query->whereDate('tanggal', \Carbon\Carbon::parse($request->tanggal));
+    }
+
+    // Filter berdasarkan bulan
+    if ($request->filled('bulan')) {
+        $query->whereMonth('tanggal', $request->bulan);
+    }
+
+    // Filter berdasarkan tahun
+    if ($request->filled('tahun')) {
+        $query->whereYear('tanggal', $request->tahun);
+    }
+
+    // Eksekusi query
+    $pelanggaran = $query->orderBy('tanggal', 'desc')->get();
+
+    // Group data per siswa untuk tampilan
+    $siswaPelanggar = $pelanggaran->groupBy('id_siswa')->map(function ($items, $id_siswa) {
+        $firstItem = $items->first();
+        return [
+            'siswa' => $firstItem->siswa,
+            'kelas_siswa' => $firstItem->kelasSiswa,
+            'jumlah_pelanggaran' => $items->count(),
+            'total_skor' => $items->sum(function($item) {
+                return $item->skor_pelanggaran->skor ?? 0;
+            }),
+            'pelanggaran' => $items
+        ];
+    })->sortByDesc('total_skor');
+
+    $siswaList = Siswa::all();
+    $kelasList = Kelas::all();
+    $skorList = Skor_Pelanggaran::all();
+
+    $totalSkor = $siswaPelanggar->pluck('total_skor', 'siswa.id');
+
+    // Ambil siswa yang total skornya >= 1000
+    $siswaWithWarning = $siswaPelanggar->filter(function($data) {
+        return $data['total_skor'] >= 1000;
+    });
+
+    $siswaPeringatan = $siswaWithWarning->map(function($data) {
+        return $data['siswa'];
+    })->values();
+
+    return view('superadmin/monitoring-pelanggaran.index', compact(
+        'pelanggaran',
+        'kategoriTindakan',
+        'siswaPelanggar',
+        'siswaList',
+        'kelasList',
+        'skorList',
+        'totalSkor',
+        'siswaPeringatan'
+    ));
+}
 
     public function getDetail($id)
 {
@@ -133,7 +133,4 @@ class MonitoringPelanggaranController extends Controller
         'pelanggarans' => $data, // <== penting!
     ]);
 }
-
- 
-
 }

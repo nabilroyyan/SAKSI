@@ -102,91 +102,214 @@ class KelasController extends Controller
 
    // KelasController.php
 
-  public function naikkanBulkSiswa(Request $request)
-{
-    $request->validate([
-        'id_kelas' => 'required_if:status,naik',
-        'siswa_ids' => 'required',
-        'kelas_siswa_ids' => 'required',
-        'status' => 'required|in:naik,tidak_naik,lulus'
-    ]);
+    public function naikkanBulkSiswa(Request $request)
+    {
+        $request->validate([
+            'siswa_ids' => 'required',
+            'kelas_siswa_ids' => 'required',
+            'status' => 'required|in:naik,tidak_naik,lulus',
+            'periode_id' => 'required|exists:periode,id' // Diperbaiki: exists validation
+        ]);
 
-    $siswaIds = explode(',', $request->siswa_ids);
-    $kelasSiswaIds = explode(',', $request->kelas_siswa_ids);
-    $idKelas = $request->id_kelas;
-    $status = $request->status;
+        $siswaIds = explode(',', $request->siswa_ids);
+        $kelasSiswaIds = explode(',', $request->kelas_siswa_ids);
+        $status = $request->status;
 
-    $periode = Periode::where('is_active', true)->first();
-    if (!$periode) {
-        return redirect()->back()->with('error', 'Periode aktif tidak ditemukan.');
+        // Ambil periode berdasarkan ID yang dipilih
+        $periode = Periode::findOrFail($request->periode_id);
+
+        // Pastikan periode yang dipilih aktif
+        if ($periode->is_active !== 'aktif') {
+            return redirect()->back()->with('error', 'Periode yang dipilih tidak aktif.');
+        }
+
+        // Urutan tingkat enum
+        $tingkatUrutan = ['X', 'XI', 'XII']; // Sesuai dengan enum database
+
+        DB::beginTransaction();
+        try {
+            foreach ($siswaIds as $index => $siswaId) {
+                if (!isset($kelasSiswaIds[$index])) continue;
+
+                $kelasSiswa = KelasSiswa::findOrFail($kelasSiswaIds[$index]);
+                $kelas = Kelas::findOrFail($kelasSiswa->id_kelas);
+
+                // Nonaktifkan entri lama
+                $kelasSiswa->update([
+                    'status' => $status,
+                    'is_active' => 'non_aktif'
+                ]);
+
+                if ($status === 'naik') {
+                    $currentTingkat = $kelas->tingkat;
+                    $currentIndex = array_search($currentTingkat, $tingkatUrutan);
+                    
+                    // Validasi tingkat saat ini
+                    if ($currentIndex === false) {
+                        throw new \Exception("Tingkat kelas '$currentTingkat' tidak valid.");
+                    }
+                    
+                    $nextIndex = $currentIndex + 1;
+
+                    // Cek apakah ada tingkat selanjutnya
+                    if ($nextIndex >= count($tingkatUrutan)) {
+                        // Sudah di tingkat terakhir (XII), tidak bisa naik lagi
+                        // Buat entry baru dengan status lulus
+                        KelasSiswa::create([
+                            'id_siswa' => $siswaId,
+                            'id_kelas' => $kelas->id,
+                            'status' => 'lulus',
+                            'is_active' => 'aktif',
+                            'periode_id' => $periode->id
+                        ]);
+                        continue;
+                    }
+
+                    $nextTingkat = $tingkatUrutan[$nextIndex];
+
+                    // Cari kelas dengan tingkat selanjutnya dan jurusan yang sama
+                    $kelasBaru = Kelas::where('tingkat', $nextTingkat)
+                        ->where('id_jurusan', $kelas->id_jurusan)
+                        ->first();
+
+                    if (!$kelasBaru) {
+                        throw new \Exception("Kelas tingkat '$nextTingkat' untuk jurusan {$kelas->jurusan->nama_jurusan} tidak ditemukan.");
+                    }
+
+                    // Tambahkan ke kelas baru
+                    KelasSiswa::create([
+                        'id_siswa' => $siswaId,
+                        'id_kelas' => $kelasBaru->id,
+                        'status' => 'naik',
+                        'is_active' => 'aktif',
+                        'periode_id' => $periode->id
+                    ]);
+                    
+                } elseif ($status === 'tidak_naik') {
+                    // Tetap di kelas sekarang dengan status tidak naik
+                    KelasSiswa::create([
+                        'id_siswa' => $siswaId,
+                        'id_kelas' => $kelas->id,
+                        'status' => 'tidak_naik',
+                        'is_active' => 'aktif',
+                        'periode_id' => $periode->id
+                    ]);
+                    
+                } elseif ($status === 'lulus') {
+                    // Hanya bisa meluluskan jika tingkat kelas adalah XII
+                    if ($kelas->tingkat !== 'XII') {
+                        throw new \Exception("Siswa hanya bisa diluluskan jika berada di tingkat XII.");
+                    }
+                    // Jika lulus, cukup update is_active menjadi non_aktif pada entri lama
+                    $kelasSiswa->update([
+                        'status' => 'lulus',
+                        'is_active' => 'non_aktif'
+                    ]);
+                }
+            }
+
+            DB::commit();
+            
+            // Pesan sukses yang lebih informatif
+            $message = match($status) {
+                'naik' => 'Siswa berhasil dinaikkan ke kelas berikutnya.',
+                'tidak_naik' => 'Status siswa berhasil diubah menjadi tidak naik kelas.',
+                'lulus' => 'Siswa berhasil dinyatakan lulus.',
+                default => 'Status siswa berhasil diperbarui.'
+            };
+            
+            return redirect()->back()->with('success', $message);
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error in naikkanBulkSiswa: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal memperbarui status siswa: ' . $e->getMessage());
+        }
     }
 
-    DB::beginTransaction();
-    try {
-        foreach ($siswaIds as $index => $siswaId) {
-            if (!isset($kelasSiswaIds[$index])) continue;
+    public function bulkPeriode(Request $request)
+    {
+        $request->validate([
+            'siswa_ids' => 'required',
+            'kelas_siswa_ids' => 'required',
+            'id_kelas' => 'required|integer',
+        ]);
 
-            $kelasSiswa = KelasSiswa::findOrFail($kelasSiswaIds[$index]);
-            $currentKelasId = $kelasSiswa->id_kelas;
+        $siswaIds = explode(',', $request->siswa_ids);
+        $kelasSiswaIds = explode(',', $request->kelas_siswa_ids);
+        $idKelas = $request->id_kelas;
 
-            $kelasSiswa->update([
-                'status' => $status,
-                'is_active' => 'non_aktif'
-            ]);
+        $periode = Periode::where('is_active', 'aktif')->first();
+        if (!$periode) {
+            return redirect()->back()->with('error', 'Periode aktif tidak ditemukan.');
+        }
 
-            if ($status === 'naik') {
+        DB::beginTransaction();
+        try {
+            foreach ($siswaIds as $index => $siswaId) {
+                if (!isset($kelasSiswaIds[$index])) continue;
+
+                // Cek apakah sudah ada di periode yang sama dan aktif
+                $sudahAda = KelasSiswa::where('id_siswa', $siswaId)
+                    ->where('periode_id', $periode->id)
+                    ->where('is_active', 'aktif')
+                    ->exists();
+
+                if ($sudahAda) {
+                    DB::rollBack(); // batalkan semua proses
+                    return redirect()->back()->with('error', 'Beberapa siswa sudah ada di periode aktif.');
+                }
+
+                // Nonaktifkan data lama
+                $kelasSiswa = KelasSiswa::findOrFail($kelasSiswaIds[$index]);
+                $kelasSiswa->update([
+                    'is_active' => 'non_aktif'
+                ]);
+
+                // Tambahkan data baru dengan periode aktif
                 KelasSiswa::create([
                     'id_siswa' => $siswaId,
                     'id_kelas' => $idKelas,
-                    'status' => 'naik',
-                    'is_active' => 'aktif',
-                    'periode_id' => $periode->id
-                ]);
-            } elseif ($status === 'tidak_naik') {
-                KelasSiswa::create([
-                    'id_siswa' => $siswaId,
-                    'id_kelas' => $currentKelasId,
-                    'status' => 'tidak_naik',
                     'is_active' => 'aktif',
                     'periode_id' => $periode->id
                 ]);
             }
-            // Tidak buat record baru kalau 'lulus'
-        }
 
-        DB::commit();
-        return redirect()->back()->with('success', 'Status siswa berhasil diperbarui.');
-    } catch (\Exception $e) {
-        DB::rollBack();
-        Log::error('Error in naikkanBulkSiswa: '.$e->getMessage());
-        return redirect()->back()->with('error', 'Gagal memperbarui status siswa: '.$e->getMessage());
+            DB::commit();
+            return redirect()->back()->with('success', 'Periode siswa berhasil diperbarui.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error in bulkPeriode: '.$e->getMessage());
+            return redirect()->back()->with('error', 'Gagal memperbarui periode siswa: '.$e->getMessage());
+        }
     }
-}
+
 
 
     public function showSiswaByKelas($id_kelas)
-{
-    $kelas = Kelas::with('jurusan')->findOrFail($id_kelas);
-    $allKelas = Kelas::with('jurusan')->where('id', '!=', $id_kelas)->get();
+    {
+        $kelas = Kelas::with('jurusan')->findOrFail($id_kelas);
+        $allKelas = Kelas::with('jurusan')->where('id', '!=', $id_kelas)->get();
 
-    $periode = Periode::where('is_active', true)->first();
-    if (!$periode) {
-        return redirect()->back()->with('error', 'Periode aktif tidak ditemukan.');
+        $periodes = Periode::all();
+        if ($periodes->isEmpty()) {
+            return redirect()->back()->with('error', 'Data periode tidak ditemukan.');
+        }
+
+        // Ambil semua siswa di kelas ini untuk semua periode
+        $siswaDiKelas = KelasSiswa::with(['siswa', 'kelas', 'periode'])
+            ->where('id_kelas', $id_kelas)
+            ->where('is_active', 'aktif')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('superadmin.kelas.detailSiswa', [
+            'kelas' => $kelas,
+            'siswaDiKelas' => $siswaDiKelas,
+            'allKelas' => $allKelas,
+            'periodes' => $periodes
+        ]);
     }
-
-    $siswaDiKelas = KelasSiswa::with(['siswa', 'kelas'])
-        ->where('id_kelas', $id_kelas)
-        ->where('periode_id', $periode->id)
-        ->where('is_active', 'aktif')
-        ->orderBy('created_at', 'desc')
-        ->get();
-
-    return view('superadmin.kelas.detailSiswa', [
-        'kelas' => $kelas,
-        'siswaDiKelas' => $siswaDiKelas,
-        'allKelas' => $allKelas
-    ]);
-}
 
 
 

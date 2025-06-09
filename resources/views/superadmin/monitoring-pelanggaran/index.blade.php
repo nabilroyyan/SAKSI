@@ -89,63 +89,68 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Data Siswa Pelanggar</h4>
-                        <div class="table-responsive">
-                            <table id="datatable" class="table table-bordered dt-responsive nowrap w-100">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 5%;">No</th>
-                                        <th>NIS</th>
-                                        <th>Nama Siswa</th>
-                                        <th>Kelas</th>
-                                        <th>Jumlah Pelanggaran</th>
-                                        <th>Total Skor</th>
-                                        <th>Status</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($siswaPelanggar as $id_siswa => $data)
-                                    <tr>
-                                        <td>{{ $loop->iteration}}</td>
-                                        <td>{{ $data['siswa']->nis_nip ?? 'N/A' }}</td>
-                                        <td>{{ $data['siswa']->nama_siswa ?? 'N/A' }}</td>
-                                        <td>
-                                            @if($data['kelas_siswa'] && $data['kelas_siswa']->is_active == 'aktif')
-                                                {{ $data['kelas_siswa']->kelas->tingkat ?? '' }}
-                                                {{ $data['kelas_siswa']->kelas->jurusan->nama_jurusan ?? '' }}
-                                            @else
-                                                N/A
-                                            @endif
-                                        </td>
-                                        <td class="text-center align-middle">
-                                            <span class="badge bg-info">{{ $data['jumlah_pelanggaran'] }}</span>
-                                        </td>
-                                        <td class="text-center align-middle">
-                                            <span class="badge {{ $data['total_skor'] >= 1000 ? 'bg-danger' : ($data['total_skor'] >= 500 ? 'bg-warning' : 'bg-success') }}">
-                                                {{ $data['total_skor'] }}
-                                            </span>
-                                        </td>
-                                        <td class="text-center align-middle">
-                                            @if($data['total_skor'] >= 1000)
-                                                <span class="badge bg-danger">Kritis</span>
-                                            @elseif($data['total_skor'] >= 500)
-                                                <span class="badge bg-warning">Peringatan</span>
-                                            @else
-                                                <span class="badge bg-success">Normal</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <button type="button" class="btn btn-sm btn-primary btn-detail"
-                                                data-id="{{ $data['siswa']->id }}"
-                                                data-name="{{ $data['siswa']->nama_siswa }}">
-                                                <i class="fas fa-eye"></i> Detail
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+                        
+                        @if($siswaPelanggar->isEmpty())
+                            <div class="alert alert-info">Tidak ada data pelanggaran yang ditemukan.</div>
+                        @else
+                            <div class="table-responsive">
+                                <table id="datatable" class="table table-bordered dt-responsive nowrap w-100">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 5%;">No</th>
+                                            <th>NIS</th>
+                                            <th>Nama Siswa</th>
+                                            <th>Kelas</th>
+                                            <th>Jumlah Pelanggaran</th>
+                                            <th>Total Skor</th>
+                                            <th>Status</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($siswaPelanggar as $id_siswa => $data)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $data['siswa']->nis_nip ?? 'N/A' }}</td>
+                                            <td>{{ $data['siswa']->nama_siswa ?? 'N/A' }}</td>
+                                            <td>
+                                                @if(isset($data['kelas_siswa']) && $data['kelas_siswa']->is_active == 'aktif')
+                                                    {{ $data['kelas_siswa']->kelas->tingkat ?? '' }}
+                                                    {{ $data['kelas_siswa']->kelas->jurusan->nama_jurusan ?? '' }}
+                                                @else
+                                                    N/A
+                                                @endif
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <span class="badge bg-info">{{ $data['jumlah_pelanggaran'] }}</span>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <span class="badge {{ $data['total_skor'] >= 1000 ? 'bg-danger' : ($data['total_skor'] >= 500 ? 'bg-warning' : 'bg-success') }}">
+                                                    {{ $data['total_skor'] }}
+                                                </span>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                @if($data['total_skor'] >= 1000)
+                                                    <span class="badge bg-danger">Kritis</span>
+                                                @elseif($data['total_skor'] >= 500)
+                                                    <span class="badge bg-warning">Peringatan</span>
+                                                @else
+                                                    <span class="badge bg-success">Normal</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-primary btn-detail"
+                                                    data-id="{{ $data['siswa']->id }}"
+                                                    data-name="{{ $data['siswa']->nama_siswa }}">
+                                                    <i class="fas fa-eye"></i> Detail
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

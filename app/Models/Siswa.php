@@ -29,14 +29,21 @@ class Siswa extends Model
     public function kelas()
     {
         return $this->belongsToMany(Kelas::class, 'kelas_siswa', 'id_siswa', 'id_kelas')
-                    ->withPivot('status', 'is_active', 'tahun_ajaran')->withTimestamps();
+            ->withPivot('status', 'is_active', 'tahun_ajaran')->withTimestamps();
     }
 
     public function kelasAktif()
     {
         return $this->hasMany(KelasSiswa::class, 'id_siswa')->where('is_active', 'aktif');
     }
-        public function kelasSiswa()
+
+    public function kelasAktifOne()
+    {
+        // Ini akan mengembalikan satu instance KelasSiswa atau null
+        return $this->hasOne(KelasSiswa::class, 'id_siswa')->where('is_active', 'aktif');
+    }
+
+    public function kelasSiswa()
     {
         return $this->hasOne(KelasSiswa::class, 'id_siswa')->latestOfMany();
     }
@@ -44,6 +51,4 @@ class Siswa extends Model
     {
         return $this->hasMany(Pelanggaran::class, 'id_siswa');
     }
-
-
 }

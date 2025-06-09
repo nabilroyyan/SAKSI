@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('pendaftaran', function (Blueprint $table) {
+        Schema::create('pendaftaran', function (Blueprint $table) {
             $table->id();
             $table->foreignId('users_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('ekstrakurikuler_id')->constrained('ekstrakurikuler')->onDelete('cascade');
@@ -23,11 +23,12 @@ return new class extends Migration
             $table->enum('status_validasi', ['pending', 'diterima', 'ditolak', 'berhenti'])->default('pending');
             $table->foreignId('validator_id')->nullable()->constrained('users')->onDelete('set null');
             $table->text('catatan_pembina')->nullable();
+            $table->text('alasan_berhenti')->nullable();
             $table->timestamp('tanggal_pendaftaran')->nullable();
             $table->timestamp('tanggal_validasi')->nullable();   
             $table->timestamp('tanggal_berhenti')->nullable();
             $table->timestamps();
-        });       
+        });
     }
 
     /**

@@ -13,14 +13,15 @@ return new class extends Migration
     {
         Schema::create('prestasi', function (Blueprint $table) {
             $table->id();
+
             // Untuk siswa aktif
             $table->foreignId('pendaftaran_id')->nullable()->constrained('pendaftaran')->onDelete('cascade');
             $table->foreignId('siswa_id')->nullable()->constrained('siswa')->onDelete('cascade');
             $table->foreignId('ekstrakurikuler_id')->nullable()->constrained('ekstrakurikuler')->onDelete('set null');
             $table->string('nama_kegiatan', 100);
-            $table->string('peringkat', 50);
+            $table->enum('peringkat', ['juara_1', 'juara_2', 'juara_3', 'harapan_1', 'harapan_2', 'partisipasi'])->default('partisipasi');
             $table->date('tanggal_kejuaraan');
-            $table->string('tingkat_kejuaraan', 50);
+            $table->enum('tingkat_kejuaraan', ['sekolah', 'kecamatan', 'kabupaten', 'provinsi', 'nasional', 'internasional'])->default('sekolah');
             $table->text('deskripsi')->nullable();
             $table->string('foto_prestasi', 50);
             $table->timestamps();

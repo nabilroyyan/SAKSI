@@ -9,6 +9,7 @@ use App\Http\Controllers\KelasController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\JurusanController;
+use App\Http\Controllers\PeriodeController;
 use App\Http\Controllers\DasboardController;
 use App\Http\Controllers\PelanggaranController;
 use App\Http\Controllers\TindakanSiswaController;
@@ -151,8 +152,16 @@ use App\Http\Controllers\MonitoringPelanggaranController;
         });
 
          Route::prefix('monitoring-absensi')->group(function () {
-            Route::get('/', [MonitoringAbsensiController::class, 'index'])->name('monitoring-Pelanggaran.index')->middleware('permission:view monitoring-pelanggaran');
+            Route::get('/', [MonitoringAbsensiController::class, 'index'])->name('monitoring-absensi.index');
             Route::get('/detail/{id}', [MonitoringAbsensiController::class, 'getDetail'])->name('monitoring-Pelanggaran.detail');
+        });
+        Route::prefix('periode')->group(function () {
+            Route::get('/', [PeriodeController::class, 'index'])->name('periode.index');
+            Route::get('/create', [PeriodeController::class, 'create'])->name('periode.create');
+            Route::post('/store', [PeriodeController::class, 'store'])->name('periode.store');
+            Route::patch('/periodes/{id}/activate', [PeriodeController::class, 'activate'])->name('periode.activate');
+            Route::patch('/periode/{id}/deactivate', [PeriodeController::class, 'deactivate'])->name('periode.deactivate');
+            Route::delete('/{periode}', [PeriodeController::class, 'destroy'])->name('periode.destroy');
         });
 
 

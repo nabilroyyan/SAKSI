@@ -55,6 +55,13 @@
                 </li>
                 @endcan
 
+                <li>
+                    <a href="{{ url('/periode') }}" class="">
+                        <i class="bx bx-detail"></i>
+                        <span key="t-dashboards">periode</span>
+                    </a>
+                </li>
+
                 @can('view bk')
                  <li>
                     <a href="{{ url('/bk') }}" class="waves-effect">

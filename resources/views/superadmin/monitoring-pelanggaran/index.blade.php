@@ -1,7 +1,6 @@
-@extends('layout.MainLayout')
+@extends('layout.mainlayout')
 
 @section('content')
-
 <div class="page-content">
     <div class="container-fluid">
         <div class="row">

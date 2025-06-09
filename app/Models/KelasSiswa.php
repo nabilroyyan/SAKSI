@@ -48,4 +48,9 @@ class KelasSiswa extends Model
     {
         return $this->hasMany(Absensi::class, 'kelas_siswa_id');
     }
+
+      public function periode()
+    {
+        return $this->belongsTo(Periode::class, 'periode_id');
+    }
 }

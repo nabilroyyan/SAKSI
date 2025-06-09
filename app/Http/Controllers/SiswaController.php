@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kelas;
 use App\Models\User;
+use App\Models\Kelas;
 use App\Models\Siswa;
+use App\Models\Periode;
+use App\Models\KelasSiswa;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use App\Models\KelasSiswa;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -142,20 +143,23 @@ class SiswaController extends Controller
             'siswa_id.*' => 'exists:siswa,id',
         ]);
 
-        // Ensure the kelas exists
         $kelas = Kelas::findOrFail($kelasId);
+        $periode = Periode::where('is_active', true)->first();
 
-        // Insert students into kelas_siswa
+        if (!$periode) {
+            return redirect()->back()->with('error', 'Periode aktif tidak ditemukan.');
+        }
+
         foreach ($request->siswa_id as $siswaId) {
             KelasSiswa::updateOrCreate(
                 [
                     'id_kelas' => $kelasId,
                     'id_siswa' => $siswaId,
+                    'periode_id' => $periode->id
                 ],
                 [
                     'status' => $request->status,
-                    'is_active' => 'aktif', // Assuming 'aktif' is the default state
-                    'tahun_ajaran' => date('Y'), // or fetch from settings
+                    'is_active' => 'aktif',
                 ]
             );
         }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Kelas;
 use App\Models\Siswa;
 use App\Models\Jurusan;
+use App\Models\Periode;
 use App\Models\KelasSiswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -101,10 +102,9 @@ class KelasController extends Controller
 
    // KelasController.php
 
-   public function naikkanBulkSiswa(Request $request)
+  public function naikkanBulkSiswa(Request $request)
 {
     $request->validate([
-        'tahun_ajaran' => 'required',
         'id_kelas' => 'required_if:status,naik',
         'siswa_ids' => 'required',
         'kelas_siswa_ids' => 'required',
@@ -113,50 +113,45 @@ class KelasController extends Controller
 
     $siswaIds = explode(',', $request->siswa_ids);
     $kelasSiswaIds = explode(',', $request->kelas_siswa_ids);
-    $tahunAjaran = $request->tahun_ajaran;
     $idKelas = $request->id_kelas;
     $status = $request->status;
+
+    $periode = Periode::where('is_active', true)->first();
+    if (!$periode) {
+        return redirect()->back()->with('error', 'Periode aktif tidak ditemukan.');
+    }
 
     DB::beginTransaction();
     try {
         foreach ($siswaIds as $index => $siswaId) {
-            // Periksa validitas index
-            if (!isset($kelasSiswaIds[$index])) {
-                continue;
-            }
+            if (!isset($kelasSiswaIds[$index])) continue;
 
-            // Mendapatkan kelas siswa saat ini
             $kelasSiswa = KelasSiswa::findOrFail($kelasSiswaIds[$index]);
             $currentKelasId = $kelasSiswa->id_kelas;
 
-            // Nonaktifkan record lama
             $kelasSiswa->update([
                 'status' => $status,
-                'is_active' => 'non_aktif'  // Menggunakan nilai integer untuk is_active
+                'is_active' => 'non_aktif'
             ]);
 
-            // Buat record baru berdasarkan status
             if ($status === 'naik') {
-                // Siswa naik kelas - gunakan kelas tujuan baru
                 KelasSiswa::create([
                     'id_siswa' => $siswaId,
                     'id_kelas' => $idKelas,
-                    'tahun_ajaran' => $tahunAjaran,
                     'status' => 'naik',
-                    'is_active' => 'aktif'
+                    'is_active' => 'aktif',
+                    'periode_id' => $periode->id
                 ]);
             } elseif ($status === 'tidak_naik') {
-                // Siswa tidak naik kelas - gunakan kelas yang sama
                 KelasSiswa::create([
                     'id_siswa' => $siswaId,
-                    'id_kelas' => $currentKelasId,  // Menggunakan kelas yang sama
-                    'tahun_ajaran' => $tahunAjaran,
+                    'id_kelas' => $currentKelasId,
                     'status' => 'tidak_naik',
-                    'is_active' => 'aktif'
+                    'is_active' => 'aktif',
+                    'periode_id' => $periode->id
                 ]);
             }
-            // Untuk status 'lulus', tidak perlu membuat record baru
-
+            // Tidak buat record baru kalau 'lulus'
         }
 
         DB::commit();
@@ -168,29 +163,31 @@ class KelasController extends Controller
     }
 }
 
-   public function showSiswaByKelas($id_kelas)
-    {
-        // Ambil data kelas
-        $kelas = Kelas::with('jurusan')->findOrFail($id_kelas);
-        
-        // Ambil semua kelas kecuali kelas saat ini
-        $allKelas = Kelas::with('jurusan')
-                    ->where('id', '!=', $id_kelas)
-                    ->get();
-        
-        // Ambil relasi siswa melalui tabel pivot
-        $siswaDiKelas = KelasSiswa::with(['siswa', 'kelas'])
-            ->where('id_kelas', $id_kelas)
-            ->where('is_active', 1)
-            ->orderBy('created_at', 'desc')
-            ->get();
 
-        return view('superadmin.kelas.detailSiswa', [
-            'kelas' => $kelas,
-            'siswaDiKelas' => $siswaDiKelas,
-            'allKelas' => $allKelas
-        ]);
+    public function showSiswaByKelas($id_kelas)
+{
+    $kelas = Kelas::with('jurusan')->findOrFail($id_kelas);
+    $allKelas = Kelas::with('jurusan')->where('id', '!=', $id_kelas)->get();
+
+    $periode = Periode::where('is_active', true)->first();
+    if (!$periode) {
+        return redirect()->back()->with('error', 'Periode aktif tidak ditemukan.');
     }
+
+    $siswaDiKelas = KelasSiswa::with(['siswa', 'kelas'])
+        ->where('id_kelas', $id_kelas)
+        ->where('periode_id', $periode->id)
+        ->where('is_active', 'aktif')
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    return view('superadmin.kelas.detailSiswa', [
+        'kelas' => $kelas,
+        'siswaDiKelas' => $siswaDiKelas,
+        'allKelas' => $allKelas
+    ]);
+}
+
 
 
     public function hapusSiswa($id)

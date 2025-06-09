@@ -134,26 +134,6 @@ class MonitoringPelanggaranController extends Controller
     ]);
 }
 
-
-
-    public function simpanTindakan(Request $request)
-    {
-        $request->validate([
-            'id_siswa' => 'required|exists:siswa,id',
-            'id_tindakan' => 'required|exists:kategori_tindakan,id',
-            'tanggal' => 'required|date',
-            'catatan' => 'nullable|string',
-        ]);
-
-        TindakanSiswa::create([
-            'id_siswa' => $request->id_siswa,
-            'id_tindakan' => $request->id_tindakan,
-            'tanggal' => $request->tanggal,
-            'catatan' => $request->catatan,
-        ]);
-
-        return response()->json(['message' => 'Tindakan berhasil disimpan.']);
-    }
  
 
 }

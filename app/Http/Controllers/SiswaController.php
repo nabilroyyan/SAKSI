@@ -24,6 +24,13 @@ class SiswaController extends Controller
         return view('superadmin.siswa.index', compact('siswa'));
     }
 
+    public function import(Request $request)
+    {
+        Excel::import(new SiswaImport, $request->file('file_siswa'));
+
+        return redirect()->back()->with('success', 'Data berhasil diimpor');
+    }
+
     // Tampilkan form tambah siswa
     public function create()
     {

@@ -23,9 +23,9 @@
                     @endif
 
                     @if($siswaTindakan->count() > 0)
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead class="table-dark">
+                        <h4 class="card-title">Table Tindakan Siswa</h4>
+                             <table id="datatable" class="table table-bordered dt-responsive nowrap w-100">
+                                <thead class="">
                                     <tr>
                                         <th style="width: 5%">#</th>
                                         <th style="width: 20%">Nama Siswa</th>
@@ -148,11 +148,20 @@
                                                                     <div class="list-group">
                                                                         @foreach($riwayatTindakan as $riwayat)
                                                                             <div class="list-group-item">
-                                                                                <div class="d-flex justify-content-between">
-                                                                                    <small class="text-muted">{{ $riwayat->tanggal }}</small>
-                                                                                    <span class="badge {{ $riwayat->status == 'sudah' ? 'bg-success' : 'bg-warning' }}">
-                                                                                        {{ ucfirst($riwayat->status) }}
-                                                                                    </span>
+                                                                                <div class="d-flex justify-content-between align-items-center">
+                                                                                    <div>
+                                                                                        <small class="text-muted">{{ $riwayat->tanggal }}</small>
+                                                                                        <span class="badge {{ $riwayat->status == 'sudah' ? 'bg-success' : 'bg-warning' }}">
+                                                                                            {{ ucfirst($riwayat->status) }}
+                                                                                        </span>
+                                                                                    </div>
+                                                                                    <form action="{{ route('tindakan-siswa.destroy', $riwayat->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus tindakan ini?')" style="display:inline;">
+                                                                                        @csrf
+                                                                                        @method('DELETE')
+                                                                                        <button type="submit" class="btn btn-sm btn-danger" title="Hapus Tindakan">
+                                                                                            <i class="fas fa-trash"></i>
+                                                                                        </button>
+                                                                                    </form>
                                                                                 </div>
                                                                                 <p class="mb-1">{{ $riwayat->catatan ?? 'Tidak ada catatan' }}</p>
                                                                             </div>

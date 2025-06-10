@@ -25,7 +25,7 @@ class TindakanSiswaController extends Controller
                 ->join('kelas', 'kelas_siswa.id_kelas', '=', 'kelas.id')
                 ->join('jurusan', 'kelas.id_jurusan', '=', 'jurusan.id')
                 ->join('skor_pelanggaran', 'pelanggaran.id_skor_pelanggaran', '=', 'skor_pelanggaran.id')
-                ->where('kelas_siswa.is_active', 'aktif') // ✅ penting
+                // Mengambil semua data tanpa filter is_active
                 ->select(
                     'siswa.id as siswa_id',
                     'siswa.nama_siswa',
@@ -133,5 +133,14 @@ class TindakanSiswaController extends Controller
         $tindakan = TindakanSiswa::findOrFail($id);
         $tindakan->update(['status' => 'sudah']);
         return back()->with('success', 'Status tindakan diperbarui.');
+    }
+
+    // Hapus tindakan siswa
+    public function destroy($id)
+    {
+        $tindakan = TindakanSiswa::findOrFail($id);
+        $tindakan->delete();
+
+        return back()->with('success', 'Tindakan berhasil dihapus.');
     }
 }

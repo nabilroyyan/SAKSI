@@ -149,12 +149,13 @@ use App\Http\Controllers\MonitoringPelanggaranController;
             Route::get('/create/{siswa_id}/{kelas_siswa_id}', [TindakanSiswaController::class, 'create'])->name('tindakan-siswa.create');
             Route::post('/store', [TindakanSiswaController::class, 'store'])->name('tindakan-siswa.store');
             Route::post('tindakan-siswa/update-status/{id}', [TindakanSiswaController::class, 'updateStatus'])->name('tindakan-siswa.updateStatus');
+            Route::delete('/delete/{id}', [TindakanSiswaController::class, 'destroy'])->name('tindakan-siswa.destroy');
 
         });
 
          Route::prefix('monitoring-absensi')->group(function () {
             Route::get('/', [MonitoringAbsensiController::class, 'index'])->name('monitoring-absensi.index');
-            Route::get('/detail/{id}', [MonitoringAbsensiController::class, 'getDetail'])->name('monitoring-Pelanggaran.detail');
+            Route::get('/detail/{siswa}', [AbsensiController::class, 'getDetail'])->name('monitoring-absensi.detail');
         });
         Route::prefix('periode')->group(function () {
             Route::get('/', [PeriodeController::class, 'index'])->name('periode.index');

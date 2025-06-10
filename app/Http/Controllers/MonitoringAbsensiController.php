@@ -102,34 +102,34 @@ class MonitoringAbsensiController extends Controller
         ));
     }
 
-    public function getDetail($id)
-    {
-        $siswa = Siswa::with([
-            'absensis.kelasSiswa.kelas',
-            'absensis.petugas'
-        ])->findOrFail($id);
+public function getDetail($id)
+{
+    $siswa = Siswa::with([
+        'absensis.kelasSiswa.kelas',
+        'absensis.petugas'
+    ])->findOrFail($id);
 
-        $data = $siswa->absensis->sortByDesc('hari_tanggal')->map(function ($item) {
-            return [
-                'tanggal' => $item->hari_tanggal,
-                'status' => $item->status,
-                'status_surat' => $item->status_surat,
-                'catatan' => $item->catatan ?? '-',
-                'petugas' => $item->petugas->name ?? '-',
-                'bukti' => $item->foto_surat ? asset('storage/' . $item->foto_surat) : null,
-            ];
-        });
+    $data = $siswa->absensis->sortByDesc('hari_tanggal')->map(function ($item) {
+        return [
+            'tanggal' => $item->hari_tanggal,
+            'status' => $item->status,
+            'status_surat' => $item->status_surat,
+            'catatan' => $item->catatan ?? '-',
+            'petugas' => $item->petugas->name ?? '-',
+            'bukti' => $item->foto_surat ? asset('storage/' . $item->foto_surat) : null,
+        ];
+    });
 
-        return response()->json([
-            'nama' => $siswa->nama_siswa,
-            'total_absen' => $siswa->absensis->count(),
-            'hadir' => $siswa->absensis->where('status', 'hadir')->count(),
-            'sakit' => $siswa->absensis->where('status', 'sakit')->count(),
-            'izin' => $siswa->absensis->where('status', 'izin')->count(),
-            'alpa' => $siswa->absensis->where('status', 'alpa')->count(),
-            'detail_absensi' => $data,
-        ]);
-    }
+    return response()->json([
+        'nama' => $siswa->nama_siswa,
+        'total_absen' => $siswa->absensis->count(),
+        'hadir' => $siswa->absensis->where('status', 'hadir')->count(),
+        'sakit' => $siswa->absensis->where('status', 'sakit')->count(),
+        'izin' => $siswa->absensis->where('status', 'izin')->count(),
+        'alpa' => $siswa->absensis->where('status', 'alpa')->count(),
+        'detail_absensi' => $data,
+    ]);
+}
 
     public function exportExcel(Request $request)
     {
@@ -288,71 +288,4 @@ class MonitoringAbsensiController extends Controller
         return $pdf->download($filename);
     }
 
-    public function dashboard()
-    {
-        // Statistik minggu ini
-        $mingguIni = Carbon::now()->startOfWeek();
-        $akhirMinggu = Carbon::now()->endOfWeek();
-
-        $absensiMingguIni = Absensi::whereBetween('hari_tanggal', [$mingguIni, $akhirMinggu])
-            ->whereHas('kelasSiswa', function ($q) {
-                $q->where('is_active', 'aktif');
-            })->get();
-
-        $statistikMingguIni = [
-            'hadir' => $absensiMingguIni->where('status', 'hadir')->count(),
-            'sakit' => $absensiMingguIni->where('status', 'sakit')->count(),
-            'izin' => $absensiMingguIni->where('status', 'izin')->count(),
-            'alpa' => $absensiMingguIni->where('status', 'alpa')->count(),
-        ];
-
-        // Siswa dengan alpa terbanyak bulan ini
-        $bulanIni = Carbon::now()->startOfMonth();
-        $akhirBulan = Carbon::now()->endOfMonth();
-
-        $absensiБуланIni = Absensi::with(['siswa', 'kelasSiswa.kelas'])
-            ->whereBetween('hari_tanggal', [$bulanIni, $akhirBulan])
-            ->whereHas('kelasSiswa', function ($q) {
-                $q->where('is_active', 'aktif');
-            })->get();
-
-        $siswaAlpaTerbanyak = $absensiБуланIni->where('status', 'alpa')
-            ->groupBy('id_siswa')
-            ->map(function ($items) {
-                $first = $items->first();
-                return [
-                    'siswa' => $first->siswa,
-                    'kelas' => $first->kelasSiswa->kelas ?? null,
-                    'total_alpa' => $items->count(),
-                ];
-            })
-            ->sortByDesc('total_alpa')
-            ->take(5);
-
-        // Trend absensi 7 hari terakhir
-        $trendAbsensi = collect();
-        for ($i = 6; $i >= 0; $i--) {
-            $tanggal = Carbon::now()->subDays($i);
-            $absensiHari = Absensi::whereDate('hari_tanggal', $tanggal)
-                ->whereHas('kelasSiswa', function ($q) {
-                    $q->where('is_active', 'aktif');
-                })->get();
-
-            $trendAbsensi->push([
-                'tanggal' => $tanggal->format('Y-m-d'),
-                'hari' => $tanggal->format('l'),
-                'hadir' => $absensiHari->where('status', 'hadir')->count(),
-                'sakit' => $absensiHari->where('status', 'sakit')->count(),
-                'izin' => $absensiHari->where('status', 'izin')->count(),
-                'alpa' => $absensiHari->where('status', 'alpa')->count(),
-                'total' => $absensiHari->count(),
-            ]);
-        }
-
-        return view('superadmin.monitoring-absensi.dashboard', compact(
-            'statistikMingguIni',
-            'siswaAlpaTerbanyak',
-            'trendAbsensi'
-        ));
-    }
 }

@@ -51,4 +51,9 @@ class Siswa extends Model
     {
         return $this->hasMany(Pelanggaran::class, 'id_siswa');
     }
+
+        public function absensis()
+    {
+        return $this->hasMany(Absensi::class);
+    }
 }

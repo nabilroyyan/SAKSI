@@ -18,8 +18,8 @@ class SiswaController extends Controller
     // Tampilkan semua siswa
     public function index()
     {
-        $siswa = Siswa::all();
-        return view('superadmin.siswa.index',compact('siswa'));
+        $siswa = Siswa::orderBy('created_at', 'desc')->get();
+        return view('superadmin.siswa.index', compact('siswa'));
     }
 
     // Tampilkan form tambah siswa

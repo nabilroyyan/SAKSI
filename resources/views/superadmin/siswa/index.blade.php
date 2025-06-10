@@ -24,14 +24,18 @@
                         <div class="row mb-3">
                             <div class="col-sm-6 col-md-auto mb-2 mb-md-0">
                                 {{-- Tombol untuk memicu Modal Import --}}
+                                @can('import-siswa')                            
                                 <button type="button" class="btn btn-info waves-effect waves-light w-100" data-bs-toggle="modal" data-bs-target="#importSiswaModal">
                                     <i class="fas fa-file-import me-1"></i> Import Siswa
                                 </button>
+                                @endcan
                             </div>
                             <div class="col-sm-6 col-md-auto ms-auto"> {{-- Tombol Tambah Data Siswa di kanan --}}
+                                @can('tambah siswa')
                                 <a href="{{ route('siswa.create') }}" class="btn btn-primary btn-rounded waves-effect waves-light w-100">
                                     <i class="mdi mdi-plus me-1"></i> Tambah Data Siswa
                                 </a>
+                                @endcan
                             </div>
                         </div>
 
@@ -94,19 +98,23 @@
                                                 @endif
                                             </td>
                                             <td>
+                                                @can('edit siswa')                                                 
                                                 <a href="{{ route('siswa.edit', $item->id) }}"
                                                     class="btn btn-warning btn-sm waves-effect waves-light" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form action="{{ route('siswa.destroy', $item->id) }}" method="POST"
+                                                @endcan
+                                            @can('hapus siswa')
+                                            <form action="{{ route('siswa.destroy', $item->id) }}" method="POST"
                                                     class="d-inline delete-form">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-danger btn-sm waves-effect waves-light" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"
-                                                        data-nama="{{ $item->nama_siswa }}">
-                                                        <i class="fas fa-trash-alt"></i>
-                                                    </button>
-                                                </form>
+                                                    data-nama="{{ $item->nama_siswa }}">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                            @endcan
                                             </td>
                                         </tr>
                                     @empty

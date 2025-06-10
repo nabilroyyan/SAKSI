@@ -145,8 +145,12 @@
                     </div>
                 </div>
                 <div class="modal-footer">
+                    @can('terima vaidasi')
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    @endcan
+                    @can('tolak validasi')
                     <button type="submit" class="btn btn-danger">Tolak Surat</button>
+                    @endcan 
                 </div>
             </div>
         </form>

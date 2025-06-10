@@ -76,36 +76,40 @@
                                                 @endif
                                             </td>
                                             <td>
+                                                @can('tambah tindakan-siswa')
+                                                    
                                                 <div class="btn-group" role="group">
                                                     @if(!$tindakan || $tindakan->status == 'belum')
-                                                        <a href="{{ route('tindakan-siswa.create', ['siswa_id' => $siswa->siswa_id, 'kelas_siswa_id' => $siswa->kelas_siswa_id]) }}" 
-                                                           class="btn btn-sm btn-primary" 
-                                                           title="Berikan Tindakan">
-                                                            <i class="fas fa-plus"></i>
-                                                        </a>
+                                                    <a href="{{ route('tindakan-siswa.create', ['siswa_id' => $siswa->siswa_id, 'kelas_siswa_id' => $siswa->kelas_siswa_id]) }}" 
+                                                        class="btn btn-sm btn-primary" 
+                                                        title="Berikan Tindakan">
+                                                        <i class="fas fa-plus"></i>
+                                                    </a>
                                                     @endif
                                                     
                                                     @if($tindakan && $tindakan->status == 'belum')
-                                                        <form action="{{ route('tindakan-siswa.updateStatus', $tindakan->id_siswa) }}" 
-                                                              method="POST" 
-                                                              style="display: inline;">
-                                                            @csrf
-                                                            @method('POST')
-                                                            <button type="submit" 
-                                                                    class="btn btn-sm btn-success" 
-                                                                    title="Tandai Selesai"
-                                                                    onclick="return confirm('Yakin tindakan sudah dilakukan?')">
-                                                                <i class="fas fa-check"></i>
-                                                            </button>
-                                                        </form>
-                                                    @endif
-                                                    
-                                                    <button class="btn btn-sm btn-info" 
-                                                            title="Lihat Detail"
-                                                            data-bs-toggle="modal" 
-                                                            data-bs-target="#detailModal{{ $siswa->siswa_id }}">
-                                                        <i class="fas fa-eye"></i>
+                                                    <form action="{{ route('tindakan-siswa.updateStatus', $tindakan->id_siswa) }}" 
+                                                        method="POST" 
+                                                        style="display: inline;">
+                                                        @csrf
+                                                        @method('POST')
+                                                        <button type="submit" 
+                                                        class="btn btn-sm btn-success" 
+                                                        title="Tandai Selesai"
+                                                        onclick="return confirm('Yakin tindakan sudah dilakukan?')">
+                                                        <i class="fas fa-check"></i>
                                                     </button>
+                                                </form>
+                                                @endif
+                                                @endcan
+                                                    @can('detail tindakan-siswa')   
+                                                    <button class="btn btn-sm btn-info" 
+                                                    title="Lihat Detail"
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#detailModal{{ $siswa->siswa_id }}">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                @endcan
                                                 </div>
                                             </td>
                                         </tr>
@@ -155,6 +159,7 @@
                                                                                             {{ ucfirst($riwayat->status) }}
                                                                                         </span>
                                                                                     </div>
+                                                                                    @can('hapus tindakan-siswa')                                                                      
                                                                                     <form action="{{ route('tindakan-siswa.destroy', $riwayat->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus tindakan ini?')" style="display:inline;">
                                                                                         @csrf
                                                                                         @method('DELETE')
@@ -162,6 +167,7 @@
                                                                                             <i class="fas fa-trash"></i>
                                                                                         </button>
                                                                                     </form>
+                                                                                    @endcan 
                                                                                 </div>
                                                                                 <p class="mb-1">{{ $riwayat->catatan ?? 'Tidak ada catatan' }}</p>
                                                                             </div>

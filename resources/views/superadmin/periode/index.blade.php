@@ -22,9 +22,11 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex justify-content-end mb-3">
+                                @can('tambah periode')
                                 <a href="{{ route('periode.create') }}" class="btn btn-primary btn-rounded waves-effect waves-light">
                                     <i class="mdi mdi-plus me-1"></i> Tambah Periode
                                 </a>
+                                @endcan
                             </div>
                             <h4 class="card-title">Table Periode Akademik</h4>
                             <div class="table-responsive">
@@ -53,14 +55,15 @@
                                                  </td>
                                                 <td>
                                                     <div class="d-flex gap-2">
+                                                        @can('aktif periode')
                                                         @if($periode->is_active === 'aktif')
-                                                            <form action="{{ route('periode.deactivate', $periode->id) }}" method="POST" style="display:inline;">
-                                                                @csrf
-                                                                @method('PATCH')
-                                                                <button type="submit" class="btn btn-warning btn-sm" onclick="return confirm('Nonaktifkan periode ini?')">
-                                                                    <i class="fas fa-times"></i> Non Aktifkan
-                                                                </button>
-                                                            </form>
+                                                        <form action="{{ route('periode.deactivate', $periode->id) }}" method="POST" style="display:inline;">
+                                                            @csrf
+                                                            @method('PATCH')
+                                                            <button type="submit" class="btn btn-warning btn-sm" onclick="return confirm('Nonaktifkan periode ini?')">
+                                                                <i class="fas fa-times"></i> Non Aktifkan
+                                                            </button>
+                                                        </form>
                                                         @else
                                                             <form action="{{ route('periode.activate', $periode->id) }}" method="POST" style="display:inline;">
                                                                 @csrf
@@ -70,6 +73,8 @@
                                                                 </button>
                                                             </form>
                                                         @endif
+                                                        @endcan
+                                                        @can('hapus periode')             
                                                         <form action="{{ route('periode.destroy', $periode->id) }}" method="POST" style="display:inline;">
                                                             @csrf
                                                             @method('DELETE')
@@ -77,6 +82,7 @@
                                                                 <i class="fas fa-trash"></i>
                                                             </button>
                                                         </form>
+                                                        @endcan
                                                     </div>
                                                 </td>
                                             </tr>

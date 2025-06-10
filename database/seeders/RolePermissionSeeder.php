@@ -27,11 +27,17 @@ class RolePermissionSeeder extends Seeder
             'edit siswa',
             'hapus siswa',
             'tambah kelas-siswa',
+            'import-siswa',
 
             'view jurusan',
             'tambah jurusan',
             'edit jurusan',
             'hapus jurusan',
+
+            'view periode',
+            'tambah periode',
+            'aktif periode',
+            'hapus periode',
 
             'view kelas',
             'tambah kelas',
@@ -39,6 +45,7 @@ class RolePermissionSeeder extends Seeder
             'detail kelas',
             'hapus kelas',
             'naik kelas',
+            'update periode',
             'hapus-siswa kelas',
 
             'view bk',
@@ -56,12 +63,19 @@ class RolePermissionSeeder extends Seeder
             'tambah pelanggaran',
             'edit pelanggaran',
             'hapus pelanggaran',
+            'detail pelanggaran',
 
             'view monitoring-pelanggaran',
+            'view tindakan-siswa',
+            'tambah tindakan-siswa',
+            'detail tindakan-siswa',
 
             'view catatan-absensi',
             'view input-absensi',
             'view riwayat-absensi',
+
+            'view monitoring-absensi',
+            'detail monitoring-absensi',
 
             'view user',
             'tambah user',
@@ -82,6 +96,13 @@ class RolePermissionSeeder extends Seeder
             'manage permissions',
 
             'view validasi surat',
+            'terima vaidasi',
+            'tolak validasi',
+
+            'tulisan data master',
+            'tulisan pelanggaran',
+            'tulisan absensi',
+            'tulisan user management',
 
         ];
 
@@ -107,11 +128,17 @@ class RolePermissionSeeder extends Seeder
             'edit siswa',
             'hapus siswa',
             'tambah kelas-siswa',
+            'import-siswa',
 
             'view jurusan',
             'tambah jurusan',
             'edit jurusan',
             'hapus jurusan',
+
+            'view periode',
+            'tambah periode',
+            'aktif periode',
+            'hapus periode',
 
             'view kelas',
             'tambah kelas',
@@ -119,6 +146,7 @@ class RolePermissionSeeder extends Seeder
             'detail kelas',
             'hapus kelas',
             'naik kelas',
+            'update periode',
             'hapus-siswa kelas',
 
             'view bk',
@@ -136,12 +164,15 @@ class RolePermissionSeeder extends Seeder
             'tambah pelanggaran',
             'edit pelanggaran',
             'hapus pelanggaran',
+            'detail pelanggaran',
 
             'view monitoring-pelanggaran',
+            'view tindakan-siswa',
+            'tambah tindakan-siswa',
+            'detail tindakan-siswa',
 
-            'view catatan-absensi',
-            'view input-absensi',
-            'view riwayat-absensi',
+            'view monitoring-absensi',
+            'detail monitoring-absensi',
 
             'view user',
             'tambah user',
@@ -160,32 +191,81 @@ class RolePermissionSeeder extends Seeder
             'edit permission',
             'hapus permission',
             'manage permissions',
+
             'view validasi surat',
+            'terima vaidasi',
+            'tolak validasi',
+
+            'tulisan data master',
+            'tulisan pelanggaran',
+            'tulisan absensi',
+            'tulisan user management',
         ]);
 
         $bk->givePermissionTo([
             'view dashboard',
 
-            'view siswa',
-            'view data-siswa',
-            'view kelas-siswa',
-
-            'view kelas',
-            'detail kelas',
-
             'view bk',
 
             'view skor-pelanggaran',
+            'tambah skor-pelanggaran',
+            'hapus skor-pelanggaran',
 
             'view kategori-tindakan',
+            'tambah kategori-tindakan',
+            'hapus kategori-tindakan',
 
             'view pelanggaran',
+            'tambah pelanggaran',
+            'edit pelanggaran',
+            'hapus pelanggaran',  
 
             'view monitoring-pelanggaran',
+            'detail pelanggaran',
+            'view tindakan-siswa',
+            'tambah tindakan-siswa',
 
-            'view catatan-absensi',
-            'view validasi surat'
+            'view monitoring-absensi',
+            'detail monitoring-absensi',
+
+            'view validasi surat',
+            'terima vaidasi',
+            'tolak validasi',
+
+            'tulisan pelanggaran',
+            'tulisan absensi',
         ]);
+
+        $tatip->givePermissionTo([
+            'view skor-pelanggaran',
+            'tambah skor-pelanggaran',
+            'hapus skor-pelanggaran',
+
+            'view kategori-tindakan',
+            'tambah kategori-tindakan',
+            'hapus kategori-tindakan',
+
+            'view pelanggaran',
+            'tambah pelanggaran',
+            'edit pelanggaran',
+            'hapus pelanggaran',
+            'detail pelanggaran',
+
+            'view monitoring-pelanggaran',
+            'view tindakan-siswa',
+
+            'tulisan pelanggaran',
+        ]);
+
+          $sekretaris->givePermissionTo([
+            'view catatan-absensi',
+            'view input-absensi',
+            'view riwayat-absensi',
+
+            'tulisan absensi',
+
+        ]);
+        
         
     
     }

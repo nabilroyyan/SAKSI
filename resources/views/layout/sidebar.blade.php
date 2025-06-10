@@ -18,7 +18,9 @@
                 </li>
                 @endcan
 
+                @can('tulisan data master')
                 <li class="menu-title" key="t-apps">Data Master</li>
+                @endcan
 
                 @can('view siswa')
                 <li>
@@ -55,12 +57,14 @@
                 </li>
                 @endcan
 
+                @can('view periode')     
                 <li>
                     <a href="{{ url('/periode') }}" class="">
                         <i class="bx bx-detail"></i>
                         <span key="t-dashboards">periode</span>
                     </a>
                 </li>
+                @endcan
 
                 @can('view bk')
                  <li>
@@ -71,7 +75,9 @@
                 </li>
                 @endcan
 
+                @can('tulisan pelanggaran')
                 <li class="menu-title" key="t-apps">Pelanggaran</li>
+                @endcan
 
                 @can('view skor-pelanggaran')
                 <li>
@@ -100,12 +106,14 @@
                 </li>
                 @endcan
 
-                 <li>
+                @can('view tindakan-siswa')                   
+                <li>
                     <a href="{{ url('/tindakan-siswa') }}" class="waves-effect">
                         <i class="bx bx-chat"></i>
                         <span key="t-chat">Tindakan Siswa</span>
                     </a>
                 </li>
+                @endcan
 
                 @can('view monitoring-pelanggaran')
                 <li>
@@ -116,7 +124,9 @@
                 </li>
                 @endcan
 
+                @can('tulisan absensi')
                 <li class="menu-title" key="t-apps">Absensi</li>
+                @endcan
 
                 @can('view catatan-absensi')
                 <li>
@@ -150,14 +160,18 @@
                 </li>
                 @endcan
 
+                @can('view monitoring-absensi')                    
                 <li>
                     <a href="{{ url('/monitoring-absensi') }}" class="waves-effect">
                         <i class="bx bx-store"></i>
                         <span key="t-ecommerce">Monitoring-Absensi</span>
                     </a>
                 </li>
+                @endcan
 
-                 <li class="menu-title" key="t-apps">User Management</li>
+                @can('tulisan user management')                
+                <li class="menu-title" key="t-apps">User Management</li>
+                @endcan
 
                 @can('view user')
                  <li>

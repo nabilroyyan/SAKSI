@@ -139,11 +139,13 @@
                                                 @endif
                                             </td>
                                             <td>
+                                            @can('detail pelanggaran')         
                                                 <button type="button" class="btn btn-sm btn-primary btn-detail"
-                                                    data-id="{{ $data['siswa']->id }}"
-                                                    data-name="{{ $data['siswa']->nama_siswa }}">
-                                                    <i class="fas fa-eye"></i> Detail
-                                                </button>
+                                                data-id="{{ $data['siswa']->id }}"
+                                                data-name="{{ $data['siswa']->nama_siswa }}">
+                                                <i class="fas fa-eye"></i> Detail
+                                            </button>
+                                            @endcan
                                             </td>
                                         </tr>
                                         @endforeach

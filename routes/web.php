@@ -42,7 +42,7 @@ use App\Http\Controllers\MonitoringPelanggaranController;
             //tambah siswa ke kelas
             Route::get('/kelas/{id}/siswa', [SiswaController::class, 'showSiswa'])->name('kelas.siswa')->middleware('permission:tambah kelas-siswa');
             Route::post('/{kelas}/siswa', [SiswaController::class, 'storeSiswa'])->name('kelas.siswa.store');// Changed to POST
-            Route::post('siswa/import/data', [SiswaController::class, 'import'])->name('siswa.import');
+            Route::post('siswa/import/data', [SiswaController::class, 'import'])->name('siswa.import')->middleware('permission:import-siswa');
         });
 
         Route::prefix('jurusan')->group(function () {
@@ -69,7 +69,7 @@ use App\Http\Controllers\MonitoringPelanggaranController;
 
             // Naikkan siswa secara bulk (multiple)
             Route::post('/kelas/naikkan-bulk-siswa', [KelasController::class, 'naikkanBulkSiswa'])->name('kelas.naikkanBulkSiswa')->middleware('permission:naik kelas');
-            Route::post('/kelas/bulk-periode', [KelasController::class, 'bulkPeriode'])->name('kelas.bulkPeriode');
+            Route::post('/kelas/bulk-periode', [KelasController::class, 'bulkPeriode'])->name('kelas.bulkPeriode')->middleware('permission:update periode');
             Route::delete('/kelas/hapus-siswa/{id}', [KelasController::class, 'hapusSiswa'])->name('kelas.hapusSiswa')->middleware('permission:hapus-siswa kelas');
 
         });
@@ -95,8 +95,7 @@ use App\Http\Controllers\MonitoringPelanggaranController;
 
         Route::prefix('monitoring-pelanggaran')->group(function () {
             Route::get('/', [MonitoringPelanggaranController::class, 'index'])->name('monitoring-Pelanggaran.index')->middleware('permission:view monitoring-pelanggaran');
-            Route::get('/detail/{id}', [MonitoringPelanggaranController::class, 'getDetail'])->name('monitoring-Pelanggaran.detail');
-            Route::post('/tindakan', [MonitoringPelanggaranController::class, 'simpanTindakan'])->name('monitoring.tindakan');
+            Route::get('/detail/{id}', [MonitoringPelanggaranController::class, 'getDetail'])->name('monitoring-Pelanggaran.detail')->middleware('permission:detail pelanggaran');
         });
 
         Route::prefix('kategori-tindakan')->group(function () {
@@ -121,8 +120,8 @@ use App\Http\Controllers\MonitoringPelanggaranController;
             Route::get('/riwayatHariIni', [AbsensiController::class, 'riwayatHariIni'])->name('riwayatHariIni')->middleware('permission:view riwayat-absensi');
             Route::delete('/hapus/{id}', [AbsensiController::class, 'hapusAbsensi'])->name('hapusAbsensi');
             Route::get('/validasi-surat', [AbsensiController::class, 'validasiSuratIndex'])->name('validasi.index')->middleware('permission:view validasi surat');
-            Route::put('/validasiSurat/{id}', [AbsensiController::class, 'validasiSurat'])->name('validasiSurat');
-            Route::put('/tolak/{id}', [AbsensiController::class, 'tolakSurat'])->name('tolakSurat');
+            Route::put('/validasiSurat/{id}', [AbsensiController::class, 'validasiSurat'])->name('validasiSurat')->middleware('permission:terima vaidasi');
+            Route::put('/tolak/{id}', [AbsensiController::class, 'tolakSurat'])->name('tolakSurat')->middleware('permission:tolak validasi');
         });
  
         Route::prefix('role')->group(function () {
@@ -146,25 +145,25 @@ use App\Http\Controllers\MonitoringPelanggaranController;
         });
 
         Route::prefix('tindakan-siswa')->middleware(['auth'])->group(function () {
-            Route::get('/', [TindakanSiswaController::class, 'index'])->name('tindakan-siswa.index');
-            Route::get('/create/{siswa_id}/{kelas_siswa_id}', [TindakanSiswaController::class, 'create'])->name('tindakan-siswa.create');
+            Route::get('/', [TindakanSiswaController::class, 'index'])->name('tindakan-siswa.index')->middleware('permission:view tindakan-siswa');
+            Route::get('/create/{siswa_id}/{kelas_siswa_id}', [TindakanSiswaController::class, 'create'])->name('tindakan-siswa.create')->middleware('permission:tambah tindakan-siswa');
             Route::post('/store', [TindakanSiswaController::class, 'store'])->name('tindakan-siswa.store');
-            Route::post('tindakan-siswa/update-status/{id}', [TindakanSiswaController::class, 'updateStatus'])->name('tindakan-siswa.updateStatus');
-            Route::delete('/delete/{id}', [TindakanSiswaController::class, 'destroy'])->name('tindakan-siswa.destroy');
+            Route::post('tindakan-siswa/update-status/{id}', [TindakanSiswaController::class, 'updateStatus'])->name('tindakan-siswa.updateStatus')->middleware('permission:edit tindakan-siswa');
+            Route::delete('/delete/{id}', [TindakanSiswaController::class, 'destroy'])->name('tindakan-siswa.destroy')->middleware('permission:hapus tindakan-siswa');
 
         });
 
          Route::prefix('monitoring-absensi')->group(function () {
-            Route::get('/', [MonitoringAbsensiController::class, 'index'])->name('monitoring-absensi.index');
-            Route::get('/detail/{siswa}', [AbsensiController::class, 'getDetail'])->name('monitoring-absensi.detail');
+            Route::get('/', [MonitoringAbsensiController::class, 'index'])->name('monitoring-absensi.index')->middleware('permission:view monitoring-absensi');
+            Route::get('/detail/{siswa}', [AbsensiController::class, 'getDetail'])->name('monitoring-absensi.detail')->middleware('permission:detail monitoring-absensi');
         });
         Route::prefix('periode')->group(function () {
-            Route::get('/', [PeriodeController::class, 'index'])->name('periode.index');
-            Route::get('/create', [PeriodeController::class, 'create'])->name('periode.create');
+            Route::get('/', [PeriodeController::class, 'index'])->name('periode.index')->middleware('permission:view periode');
+            Route::get('/create', [PeriodeController::class, 'create'])->name('periode.create')->middleware('permission:tambah periode');
             Route::post('/store', [PeriodeController::class, 'store'])->name('periode.store');
-            Route::patch('/periodes/{id}/activate', [PeriodeController::class, 'activate'])->name('periode.activate');
-            Route::patch('/periode/{id}/deactivate', [PeriodeController::class, 'deactivate'])->name('periode.deactivate');
-            Route::delete('/{periode}', [PeriodeController::class, 'destroy'])->name('periode.destroy');
+            Route::patch('/periodes/{id}/activate', [PeriodeController::class, 'activate'])->name('periode.activate')->middleware('permission:aktif periode');
+            Route::patch('/periode/{id}/deactivate', [PeriodeController::class, 'deactivate'])->name('periode.deactivate')->middleware('permission:non aktif periode');
+            Route::delete('/{periode}', [PeriodeController::class, 'destroy'])->name('periode.destroy')->middleware('permission:hapus periode');
         });
 
 

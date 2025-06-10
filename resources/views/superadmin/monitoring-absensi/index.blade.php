@@ -339,25 +339,6 @@
 
 @push('scripts')
 <script>
-$(document).ready(function() {
-    // Initialize DataTable
-    $('#absensiTable').DataTable({
-        "responsive": true,
-        "lengthChange": false,
-        "autoWidth": false,
-        "ordering": true,
-        "info": true,
-        "paging": true,
-        "searching": false, // Disable default search since we have custom filters
-        "pageLength": 25,
-        "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/id.json"
-        }
-    });
-
-    // Initialize tooltips
-    $('[data-toggle="tooltip"]').tooltip();
-});
 
 function showDetail(siswaId) {
     $.ajax({

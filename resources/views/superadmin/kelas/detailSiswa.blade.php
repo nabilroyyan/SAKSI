@@ -135,22 +135,23 @@
                             @endif
                         </small>
                     </div>
-                    
+                    @can('update periode')                       
                     <div class="mb-3">
                         <label for="bulk_periode" class="form-label">Periode Aktif</label>
                         <select class="form-select" id="bulk_periode" name="periode_id" required>
                             @foreach($periodes as $periode)
-                                @if($periode->is_active == 'aktif')
-                                    <option value="{{ $periode->id }}">
-                                        {{ $periode->tahun }} {{ $periode->semester }}
-                                    </option>
-                                @endif
+                            @if($periode->is_active == 'aktif')
+                            <option value="{{ $periode->id }}">
+                                {{ $periode->tahun }} {{ $periode->semester }}
+                            </option>
+                            @endif
                             @endforeach
                         </select>
                         <small class="form-text text-muted">
                             Pilih periode aktif untuk data siswa yang baru dibuat
                         </small>
                     </div>
+                    @endcan
                     
                     <div class="alert alert-info" id="kelasInfoContainer">
                         @if($kelas->tingkat == 'X')

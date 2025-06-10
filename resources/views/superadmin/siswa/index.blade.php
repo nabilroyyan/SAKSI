@@ -138,7 +138,7 @@
             </div> </div> </div>
 </div>
 
-<div class="modal fade" id="importSiswaModal" tabindex="-1" aria-labelledby="importSiswaModalLabel" aria-hidden="true">
+{{-- <div class="modal fade" id="importSiswaModal" tabindex="-1" aria-labelledby="importSiswaModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -158,7 +158,7 @@
                                 <i class="fas fa-download me-1"></i> Unduh Template Excel
                             </a>
                         </div> --}}
-                    </div>
+                    {{-- </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Batal</button>
@@ -169,7 +169,7 @@
             </form>
         </div>
     </div>
-</div>
+</div> --}}
 @endsection
 
 @push('scripts')

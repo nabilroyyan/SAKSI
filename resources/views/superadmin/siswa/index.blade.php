@@ -24,9 +24,9 @@
                         <div class="row mb-3">
                             <div class="col-sm-6 col-md-auto mb-2 mb-md-0">
                                 {{-- Tombol untuk memicu Modal Import --}}
-                                {{-- <button type="button" class="btn btn-info waves-effect waves-light w-100" data-bs-toggle="modal" data-bs-target="#importSiswaModal">
+                                <button type="button" class="btn btn-info waves-effect waves-light w-100" data-bs-toggle="modal" data-bs-target="#importSiswaModal">
                                     <i class="fas fa-file-import me-1"></i> Import Siswa
-                                </button> --}}
+                                </button>
                             </div>
                             <div class="col-sm-6 col-md-auto ms-auto"> {{-- Tombol Tambah Data Siswa di kanan --}}
                                 <a href="{{ route('siswa.create') }}" class="btn btn-primary btn-rounded waves-effect waves-light w-100">
@@ -135,10 +135,12 @@
 
                     </div>
                 </div>
-            </div> </div> </div>
+            </div> 
+        </div> 
+    </div>
 </div>
 
-{{-- <div class="modal fade" id="importSiswaModal" tabindex="-1" aria-labelledby="importSiswaModalLabel" aria-hidden="true">
+<div class="modal fade" id="importSiswaModal" tabindex="-1" aria-labelledby="importSiswaModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -153,12 +155,12 @@
                         <input type="file" class="form-control" id="file_siswa_modal" name="file_siswa" required accept=".xlsx, .xls, .csv">
                         <div class="form-text mt-1">Hanya file .xlsx, .xls, atau .csv yang diizinkan.</div>
                         {{-- Contoh link template jika ada --}}
-                        {{-- <div class="mt-2">
+                        <div class="mt-2">
                             <a href="{{ asset('templates/template_siswa.xlsx') }}" download class="btn btn-link btn-sm p-0">
                                 <i class="fas fa-download me-1"></i> Unduh Template Excel
                             </a>
-                        </div> --}}
-                    {{-- </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Batal</button>
@@ -169,7 +171,7 @@
             </form>
         </div>
     </div>
-</div> --}}
+</div>
 @endsection
 
 @push('scripts')

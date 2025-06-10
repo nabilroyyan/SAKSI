@@ -26,7 +26,7 @@ use App\Http\Controllers\MonitoringPelanggaranController;
     });
 
     Route::middleware(['auth', 'verified', 'role_permission'])->group(function () {
-        Route::get('/superadmin/dashboard', [DasboardController::class, 'superadmin'])->name('superadmin');
+        Route::get('/dashboard', [DasboardController::class, 'superadmin'])->name('superadmin');
 
         Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -42,6 +42,7 @@ use App\Http\Controllers\MonitoringPelanggaranController;
             //tambah siswa ke kelas
             Route::get('/kelas/{id}/siswa', [SiswaController::class, 'showSiswa'])->name('kelas.siswa')->middleware('permission:tambah kelas-siswa');
             Route::post('/{kelas}/siswa', [SiswaController::class, 'storeSiswa'])->name('kelas.siswa.store');// Changed to POST
+            Route::post('siswa/import/data', [SiswaController::class, 'import'])->name('siswa.import');
         });
 
         Route::prefix('jurusan')->group(function () {

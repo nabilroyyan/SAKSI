@@ -177,20 +177,20 @@
                                         <td>{{ $data['kelas_siswa']->kelas->nama_kelas ?? '-' }}</td>
                                         <td>{{ $data['kelas_siswa']->kelas->jurusan->nama_jurusan ?? '-' }}</td>
                                         <td>
-                                            <span class="badge badge-success">{{ $data['hadir'] }}</span>
+                                            <span class="badge badge-light text-success">{{ $data['hadir'] }}</span>
                                         </td>
                                         <td>
-                                            <span class="badge badge-info">{{ $data['sakit'] }}</span>
+                                            <span class="badge badge-light text-info">{{ $data['sakit'] }}</span>
                                         </td>
                                         <td>
-                                            <span class="badge badge-warning">{{ $data['izin'] }}</span>
+                                            <span class="badge badge-light text-warning">{{ $data['izin'] }}</span>
                                         </td>
                                         <td>
-                                            <span class="badge badge-danger">{{ $data['alpa'] }}</span>
+                                            <span class="badge badge-light text-danger">{{ $data['alpa'] }}</span>
                                         </td>
                                         <td>{{ $data['total'] }}</td>
                                         <td>
-                                            <span class="badge badge-{{ $badgeClass }}">{{ $persentase }}%</span>
+                                            <span class="badge badge-light text-{{ $badgeClass }}">{{ $persentase }}%</span>
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-info btn-sm" 
@@ -338,8 +338,6 @@
 @endpush
 
 @push('scripts')
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
 <script>
 $(document).ready(function() {
     // Initialize DataTable

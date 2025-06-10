@@ -11,7 +11,9 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;
+use App\Imports\SiswaImport;
 
 class SiswaController extends Controller
 {
@@ -20,6 +22,16 @@ class SiswaController extends Controller
     {
         $siswa = Siswa::orderBy('created_at', 'desc')->get();
         return view('superadmin.siswa.index', compact('siswa'));
+<<<<<<< HEAD
+=======
+    }
+
+    public function import(Request $request)
+    {
+        Excel::import(new SiswaImport, $request->file('file_siswa'));
+
+        return redirect()->back()->with('success', 'Data berhasil diimpor');
+>>>>>>> 398f82373776314e78b981453699a3af0334892d
     }
 
     // Tampilkan form tambah siswa
@@ -29,7 +41,7 @@ class SiswaController extends Controller
     }
     public function store(Request $request)
     {
-       
+
         $request->validate([
             'nis_nip' => 'required|string|max:20|unique:siswa,nis_nip',
             'nama_siswa' => 'required|string|max:100',
@@ -89,7 +101,7 @@ class SiswaController extends Controller
         //     'alamat' => 'required|string',
         //     'nis' => 'required|string|unique:siswas,nis,' . $siswa->id,
         // ]);
-        
+
         $siswa->update($request->all());
 
         return redirect()->route('siswa.index')->with('success', 'Data siswa berhasil diupdate.');
@@ -116,8 +128,8 @@ class SiswaController extends Controller
         $kelas = Kelas::with(['jurusan', 'kelasSiswa' => function ($q) {
             $q->where('is_active', 'aktif');
         }])
-        ->where('tingkat', $tingkat)
-        ->get();
+            ->where('tingkat', $tingkat)
+            ->get();
 
         return view('superadmin.siswa.kelassiswa', compact('kelas', 'tingkat'));
     }

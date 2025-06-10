@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('kelas_siswa', function (Blueprint $table) {
             $table->id();
             $table->enum('status', ['naik', 'tidak_naik', 'lulus', 'new']);
-            $table->foreignId('periode_id')->nullable()->constrained('periode')->onDelete('set null');
+            $table->foreignId('periode_id')->constrained('periode')->onDelete('restrict');
             $table->enum('is_active', ['aktif', 'non_aktif'])->default('aktif');
             $table->foreignId('id_siswa')->constrained('siswa')->onDelete('cascade');
             $table->foreignId('id_kelas')->constrained('kelas')->onDelete('cascade');

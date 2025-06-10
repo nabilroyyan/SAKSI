@@ -89,11 +89,19 @@ class PeriodeController extends Controller
 
 
     // ✅ Hapus periode
-    public function destroy($id)
-    {
-        $periode = Periode::findOrFail($id);
-        $periode->delete();
+   public function destroy($id)
+{
+    $periode = Periode::findOrFail($id);
 
-        return redirect()->route('periode.index')->with('success', 'Periode berhasil dihapus');
+    // Cek apakah masih digunakan di kelas_siswa
+    if ($periode->kelasSiswa()->exists()) {
+        return redirect()->route('periode.index')->with('error', 'Periode tidak bisa dihapus karena masih digunakan.');
     }
+
+    // Jika tidak digunakan, nonaktifkan atau hapus
+    $periode->delete();
+
+    return redirect()->route('periode.index')->with('success', 'Periode berhasil dinonaktifkan.');
+}
+
 }

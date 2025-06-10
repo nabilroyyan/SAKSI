@@ -1,12 +1,19 @@
 @extends('layout.MainLayout')
 @section('content')
+<div class="page-content">
 <div class="container-fluid">
     <!-- Header -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Dashboard Superadmin</h1>
-        <div class="alert alert-info">
-            Periode Aktif: <strong>{{ $periodeAktif->tahun }} - Semester {{ ucfirst($periodeAktif->semester) }}</strong>
-        </div>
+        @if($periodeAktif)
+            <div class="alert alert-info">
+                Periode Aktif: <strong>{{ $periodeAktif->tahun }} - Semester {{ ucfirst($periodeAktif->semester) }}</strong>
+            </div>
+        @else
+            <div class="alert alert-warning">
+                Tidak ada periode aktif saat ini.
+            </div>
+        @endif
     </div>
 
     <!-- Statistik Utama -->
@@ -222,6 +229,7 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection
 

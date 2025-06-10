@@ -24,9 +24,9 @@
                         <div class="row mb-3">
                             <div class="col-sm-6 col-md-auto mb-2 mb-md-0">
                                 {{-- Tombol untuk memicu Modal Import --}}
-                                <button type="button" class="btn btn-info waves-effect waves-light w-100" data-bs-toggle="modal" data-bs-target="#importSiswaModal">
+                                {{-- <button type="button" class="btn btn-info waves-effect waves-light w-100" data-bs-toggle="modal" data-bs-target="#importSiswaModal">
                                     <i class="fas fa-file-import me-1"></i> Import Siswa
-                                </button>
+                                </button> --}}
                             </div>
                             <div class="col-sm-6 col-md-auto ms-auto"> {{-- Tombol Tambah Data Siswa di kanan --}}
                                 <a href="{{ route('siswa.create') }}" class="btn btn-primary btn-rounded waves-effect waves-light w-100">

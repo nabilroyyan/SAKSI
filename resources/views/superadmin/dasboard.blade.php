@@ -4,7 +4,7 @@
 <div class="container-fluid">
     <!-- Header -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Dashboard Superadmin</h1>
+        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
         @if($periodeAktif)
             <div class="alert alert-info">
                 Periode Aktif: <strong>{{ $periodeAktif->tahun }} - Semester {{ ucfirst($periodeAktif->semester) }}</strong>

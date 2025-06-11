@@ -11,7 +11,7 @@
 
                 @can('view dashboard')
                 <li>
-                    <a href="{{ url('superadmin/dashboard') }}" class="">
+                    <a href="{{ url('/dashboard') }}" class="">
                         <i class="bx bx-home-circle"></i>
                         <span key="t-dashboards">Dashboards</span>
                     </a>

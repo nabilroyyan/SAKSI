@@ -7,25 +7,27 @@ use App\Models\KelasSiswa;
 use App\Models\Pelanggaran;
 use Illuminate\Http\Request;
 use App\Models\TindakanSiswa;
+use App\Models\PengaturanTindakan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class TindakanSiswaController extends Controller
 {
-    // Menampilkan daftar siswa yang perlu ditindak (skor ≥ 500)
-    public function index()
-    {
-        $user = Auth::user();
 
-        // Jika Superadmin, tampilkan semua siswa tindakan
-       if ($user->hasRole('superadmin')) {
-             $siswaTindakan = DB::table('pelanggaran')
+    public function index(Request $request)
+    {
+        /** @var User $user */
+        $user = Auth::user();
+        $pengaturan = PengaturanTindakan::first();
+        $batasSkor = $pengaturan->batas_skor ?? null;
+
+        if ($user->hasRole('superadmin')) {
+            $siswaTindakan = DB::table('pelanggaran')
                 ->join('siswa', 'pelanggaran.id_siswa', '=', 'siswa.id')
                 ->join('kelas_siswa', 'pelanggaran.kelas_siswa_id', '=', 'kelas_siswa.id')
                 ->join('kelas', 'kelas_siswa.id_kelas', '=', 'kelas.id')
                 ->join('jurusan', 'kelas.id_jurusan', '=', 'jurusan.id')
                 ->join('skor_pelanggaran', 'pelanggaran.id_skor_pelanggaran', '=', 'skor_pelanggaran.id')
-                // Mengambil semua data tanpa filter is_active
                 ->select(
                     'siswa.id as siswa_id',
                     'siswa.nama_siswa',
@@ -43,11 +45,10 @@ class TindakanSiswaController extends Controller
                     'jurusan.nama_jurusan',
                     'kelas.tingkat'
                 )
-                ->having('total_skor', '>=', 500)
+                ->having('total_skor', '>=', $batasSkor)
                 ->get();
 
         } else {
-            // Jika user BK
             $kelasIds = DB::table('bk_kelas')
                 ->where('id_bk', $user->id)
                 ->pluck('id_kelas');
@@ -77,12 +78,13 @@ class TindakanSiswaController extends Controller
                     'jurusan.nama_jurusan',
                     'kelas.tingkat'
                 )
-                ->having('total_skor', '>=', 500)
+                ->having('total_skor', '>=', $batasSkor)
                 ->get();
         }
 
-        return view('superadmin.tindakan-siswa.index', compact('siswaTindakan'));
+        return view('superadmin.tindakan-siswa.index', compact('siswaTindakan','pengaturan'));
     }
+
 
     // Menampilkan form tambah tindakan terhadap siswa
     public function create($siswa_id, $kelas_siswa_id)
@@ -143,4 +145,27 @@ class TindakanSiswaController extends Controller
 
         return back()->with('success', 'Tindakan berhasil dihapus.');
     }
+
+        public function edit()
+    {
+        $pengaturan = PengaturanTindakan::first();
+        return view('superadmin.pengaturan.tindakan', compact('pengaturan'));
+    }
+
+        public function update(Request $request)
+    {
+        $request->validate([
+            'batas_skor' => 'required|integer|min:0'
+        ]);
+
+        $pengaturan = PengaturanTindakan::first();
+        if (!$pengaturan) {
+            $pengaturan = new PengaturanTindakan();
+        }
+        $pengaturan->batas_skor = $request->batas_skor;
+        $pengaturan->save();
+
+        return redirect()->back()->with('success', 'Batas skor berhasil diperbarui.');
+    }
+
 }

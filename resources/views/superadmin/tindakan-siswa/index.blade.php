@@ -4,15 +4,22 @@
 @section('content')
 <div class="page-content">
     <div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-warning text-dark">
-                    <h4 class="card-title mb-0">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        Daftar Siswa Perlu Tindakan (Skor ≥ 500)
-                    </h4>
+                <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                        <h4 class="mb-sm-0 font-size-18">Data Tindakan</h4>
+
+                        <div class="page-title-right">
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item"><a href="javascript: void(0);">Tables</a></li>
+                                <li class="breadcrumb-item active">Data Tindakan</li>
+                            </ol>
+                        </div>
+
+                    </div>
                 </div>
+            </div>
+               
                 <div class="card-body">
                     @if(session('success'))
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -21,9 +28,25 @@
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     @endif
+                 <div class="card-body">
+                            <div class="d-flex justify-content-between mb-3">
+                                <div class="filter-container">
+                                </div>
+                                <form action="{{ route('pengaturan-tindakan.update') }}" method="POST">
+                                    @csrf
+                                    <label for="batas_skor">Batas Skor Tindakan</label>
+                                    <input type="number" name="batas_skor" 
+                                        value="{{ old('batas_skor', $pengaturan->batas_skor ?? '') }}" 
+                                        class="form-control" style="width: 150px; display: inline-block;"
+                                        min="1" required>
+                                    <button type="submit" class="btn btn-success">Simpan</button>
+                                </form>
+                            </div>
 
                     @if($siswaTindakan->count() > 0)
-                        <h4 class="card-title">Table Tindakan Siswa</h4>
+                         <h4 class="card-title"></h4>
+                            Table Tindakan Siswa (Batas Skor: {{ $pengaturan->batas_skor ?? '-' }})
+                        </h4>>
                              <table id="datatable" class="table table-bordered dt-responsive nowrap w-100">
                                 <thead class="">
                                     <tr>
@@ -75,10 +98,9 @@
                                                     </span>
                                                 @endif
                                             </td>
-                                            <td>
-                                                @can('tambah tindakan-siswa')
-                                                    
+                                            <td>      
                                                 <div class="btn-group" role="group">
+                                                    @can('berikan tindakan-siswa') 
                                                     @if(!$tindakan || $tindakan->status == 'belum')
                                                     <a href="{{ route('tindakan-siswa.create', ['siswa_id' => $siswa->siswa_id, 'kelas_siswa_id' => $siswa->kelas_siswa_id]) }}" 
                                                         class="btn btn-sm btn-primary" 
@@ -86,10 +108,11 @@
                                                         <i class="fas fa-plus"></i>
                                                     </a>
                                                     @endif
-                                                    
+                                                    @endcan
+                                                    @can('update tindakan-siswa')
                                                     @if($tindakan && $tindakan->status == 'belum')
-                                                    <form action="{{ route('tindakan-siswa.updateStatus', $tindakan->id_siswa) }}" 
-                                                        method="POST" 
+                                                    <form action="{{ route('tindakan-siswa.updateStatus', $tindakan->id) }}" 
+                                                        method="POST"
                                                         style="display: inline;">
                                                         @csrf
                                                         @method('POST')
@@ -102,7 +125,7 @@
                                                 </form>
                                                 @endif
                                                 @endcan
-                                                    @can('detail tindakan-siswa')   
+                                                @can('detail tindakan-siswa')   
                                                     <button class="btn btn-sm btn-info" 
                                                     title="Lihat Detail"
                                                     data-bs-toggle="modal" 
@@ -203,6 +226,7 @@
                         </div>
                     @endif
                 </div>
+            </div>
             </div>
         </div>
     </div>

@@ -39,11 +39,12 @@
                 </li>
                 @endcan
 
-                @can('view jurusan')
+
+                @can('view periode')     
                 <li>
-                    <a href="{{ url('/jurusan') }}" class="">
+                    <a href="{{ url('/periode') }}" class="">
                         <i class="bx bx-detail"></i>
-                        <span key="t-dashboards">jurusan</span>
+                        <span key="t-dashboards">periode</span>
                     </a>
                 </li>
                 @endcan
@@ -57,14 +58,16 @@
                 </li>
                 @endcan
 
-                @can('view periode')     
+                @can('view jurusan')
                 <li>
-                    <a href="{{ url('/periode') }}" class="">
+                    <a href="{{ url('/jurusan') }}" class="">
                         <i class="bx bx-detail"></i>
-                        <span key="t-dashboards">periode</span>
+                        <span key="t-dashboards">jurusan</span>
                     </a>
                 </li>
                 @endcan
+
+                
 
                 @can('view bk')
                  <li>

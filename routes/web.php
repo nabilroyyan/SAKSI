@@ -146,9 +146,13 @@ use App\Http\Controllers\MonitoringPelanggaranController;
 
         Route::prefix('tindakan-siswa')->middleware(['auth'])->group(function () {
             Route::get('/', [TindakanSiswaController::class, 'index'])->name('tindakan-siswa.index')->middleware('permission:view tindakan-siswa');
-            Route::get('/create/{siswa_id}/{kelas_siswa_id}', [TindakanSiswaController::class, 'create'])->name('tindakan-siswa.create')->middleware('permission:tambah tindakan-siswa');
+            Route::get('/pengaturan/tindakan', [TindakanSiswaController::class, 'edit'])->name('pengaturan-tindakan.edit');
+            Route::post('/pengaturan/tindakan', [TindakanSiswaController::class, 'update'])->name('pengaturan-tindakan.update');
+
+
+            Route::get('/create/{siswa_id}/{kelas_siswa_id}', [TindakanSiswaController::class, 'create'])->name('tindakan-siswa.create')->middleware('permission:berikan tindakan-siswa');
             Route::post('/store', [TindakanSiswaController::class, 'store'])->name('tindakan-siswa.store');
-            Route::post('tindakan-siswa/update-status/{id}', [TindakanSiswaController::class, 'updateStatus'])->name('tindakan-siswa.updateStatus')->middleware('permission:edit tindakan-siswa');
+            Route::post('/update-status/{id}', [TindakanSiswaController::class, 'updateStatus'])->name('tindakan-siswa.updateStatus')->middleware('permission:update tindakan-siswa');
             Route::delete('/delete/{id}', [TindakanSiswaController::class, 'destroy'])->name('tindakan-siswa.destroy')->middleware('permission:hapus tindakan-siswa');
 
         });

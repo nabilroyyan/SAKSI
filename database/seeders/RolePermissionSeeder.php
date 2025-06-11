@@ -67,8 +67,10 @@ class RolePermissionSeeder extends Seeder
 
             'view monitoring-pelanggaran',
             'view tindakan-siswa',
-            'tambah tindakan-siswa',
+            'update tindakan-siswa',
+            'berikan tindakan-siswa',
             'detail tindakan-siswa',
+            'hapus tindakan-siswa',
 
             'view catatan-absensi',
             'view input-absensi',
@@ -168,8 +170,10 @@ class RolePermissionSeeder extends Seeder
 
             'view monitoring-pelanggaran',
             'view tindakan-siswa',
-            'tambah tindakan-siswa',
+            'update tindakan-siswa',
+            'berikan tindakan-siswa',
             'detail tindakan-siswa',
+            'hapus tindakan-siswa',
 
             'view monitoring-absensi',
             'detail monitoring-absensi',
@@ -223,7 +227,8 @@ class RolePermissionSeeder extends Seeder
             'view monitoring-pelanggaran',
             'detail pelanggaran',
             'view tindakan-siswa',
-            'tambah tindakan-siswa',
+            'update tindakan-siswa',
+            'berikan tindakan-siswa',
 
             'view monitoring-absensi',
             'detail monitoring-absensi',

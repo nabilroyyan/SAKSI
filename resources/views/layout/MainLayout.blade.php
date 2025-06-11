@@ -37,6 +37,8 @@
     <link href="{{ asset('') }}assets/css/app.min.css" rel="stylesheet" />
     <!-- App js -->
     <script src="{{ asset('') }}assets/js/plugin.js"></script>
+        <!-- Tambahkan CSS Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 
@@ -111,6 +113,9 @@
     <script src="{{ asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <!-- Bootstrap Bundle with Popper (wajib untuk modal Bootstrap 5) -->
     {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> --}}
+
+<!-- Tambahkan JavaScript Select2 -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 
     <script src="{{ asset('assets/libs/metismenu/metisMenu.min.js') }}"></script>

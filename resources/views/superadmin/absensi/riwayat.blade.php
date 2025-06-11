@@ -24,7 +24,7 @@
                           @foreach($kelasList as $kelas)
                             <h5 class="alert-heading">Kelas: {{ $kelas->tingkat }} {{ $kelas->jurusan->nama_jurusan }}</h5>
                         @endforeach
-                        <p class="mb-0">Wali Kelas: {{ Auth::user()->name }}</p>
+                        <p class="mb-0">Sekretaris Kelas: {{ Auth::user()->name }}</p>
                     </div>
                 </div>
             </div>

@@ -123,10 +123,21 @@
                         <div class="form-group">
                             <label for="bukti_pelanggaran">Bukti Pelanggaran (Opsional)</label>
                             <div class="custom-file">
-                                <input type="file" class="custom-file-input" id="bukti_pelanggaran" name="bukti_pelanggaran">
-                                <label class="custom-file-label" for="bukti_pelanggaran">Pilih file</label>
+                                <input type="file" 
+                                    class="custom-file-input" 
+                                    id="bukti_pelanggaran" 
+                                    name="bukti_pelanggaran"
+                                    accept="image/*" 
+                                    capture="environment">
+                                <label class="custom-file-label" for="bukti_pelanggaran" id="label_bukti">Pilih file atau ambil foto</label>
+
                             </div>
                             <small class="form-text text-muted">Format: JPEG, PNG (Maks. 2MB)</small>
+                            
+                            <!-- Preview gambar (opsional) -->
+                            <div class="mt-2">
+                                <img id="preview" src="#" alt="Preview gambar" style="max-width: 200px; display: none;"/>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -149,13 +160,40 @@
 @endsection
 
 @push('scripts')
-<!-- Tambahkan CSS Select2 -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
-<!-- Tambahkan JavaScript Select2 -->
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
+    // Menampilkan nama file yang dipilih
+    document.getElementById('bukti_pelanggaran').addEventListener('change', function(e) {
+    var file = e.target.files[0];
+    var label = document.getElementById('label_bukti');
+
+    if (file) {
+        // Preview
+        var reader = new FileReader();
+        reader.onload = function(event) {
+            document.getElementById('preview').style.display = 'block';
+            document.getElementById('preview').src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+
+        // Tampilkan nama file
+        label.textContent = file.name;
+
+        // Validasi ukuran
+        if (file.size > 2 * 1024 * 1024) {
+            alert('Ukuran file maksimal 2MB!');
+            e.target.value = ''; // Reset input
+            label.textContent = 'Pilih file atau ambil foto';
+            document.getElementById('preview').style.display = 'none';
+        }
+    } else {
+        label.textContent = 'Pilih file atau ambil foto';
+        document.getElementById('preview').style.display = 'none';
+    }
+});
+
+
     $(document).ready(function() {
         // Inisialisasi Select2 untuk jenis pelanggaran
         $('#id_skor_pelanggaran').select2({

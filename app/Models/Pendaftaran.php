@@ -21,6 +21,7 @@ class Pendaftaran extends Model
         'status_validasi',
         'validator_id',
         'catatan_pembina',
+        'alasan_berhenti',
         'tanggal_pendaftaran',
         'tanggal_validasi',
         'tanggal_berhenti',

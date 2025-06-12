@@ -17,7 +17,6 @@ class Prestasi extends Model
         'tanggal_kejuaraan',
         'tingkat_kejuaraan',
         'deskripsi',
-        'foto_prestasi',
     ];
 
     public function pendaftaran()
@@ -27,11 +26,16 @@ class Prestasi extends Model
 
     public function siswa()
     {
-        return $this->belongsTo(Siswa::class);
+        return $this->belongsTo(Siswa::class, 'siswa_id');
     }
 
     public function ekstrakurikuler()
     {
-        return $this->belongsTo(Ekstrakurikuler::class);
+        return $this->belongsTo(Ekstrakurikuler::class, 'ekstrakurikuler_id');
+    }
+
+    public function fotos()
+    {
+        return $this->hasMany(PrestasiFoto::class, 'prestasi_id');
     }
 }

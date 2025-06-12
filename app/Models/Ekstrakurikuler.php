@@ -33,7 +33,9 @@ class Ekstrakurikuler extends Model
 
     public function siswas()
     {
-        return $this->belongsToMany(Siswa::class);
+        return $this->belongsToMany(User::class, 'pendaftaran', 'ekstrakurikuler_id', 'users_id')
+            // PENTING: Hanya hitung siswa yang status pendaftarannya 'diterima'
+            ->wherePivot('status_validasi', 'diterima');
     }
     public function user()
     {
@@ -58,4 +60,10 @@ class Ekstrakurikuler extends Model
         // Menggunakan relasi pendaftarans() yang sudah didefinisikan di atas
         return $this->pendaftarans()->where('status_validasi', 'diterima')->count();
     }
+
+    public function prestasi()
+    {
+        return $this->hasMany(Prestasi::class);
+    }
+
 }

@@ -14,11 +14,11 @@ class Logbook extends Model
     protected $fillable = [
         'users_id',
         'ekstrakurikuler_id',
-        'Kegiatan',
-        'Tanggal',
-        'Jam_mulai',
-        'Jam_selesai',
-        'Foto_kegiatan',
+        'kegiatan',
+        'tanggal',
+        'jam_mulai',
+        'jam_selesai',
+        'foto_kegiatan',
         'is_locked',
         
     ];
@@ -37,4 +37,6 @@ class Logbook extends Model
     {
         return $this->belongsTo(SesiAbsensiEkstrakurikuler::class, 'sesi_id');
     }
+
+    
 }

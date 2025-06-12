@@ -60,4 +60,19 @@ class User extends Authenticatable
             'id_kelas'      // foreign key untuk Kelas di pivot table
         )->withTimestamps();
     }
+
+    public function siswa()
+    {
+        return $this->belongsTo(Siswa::class, 'nis_nip', 'nis_nip');
+    }
+
+    public function ekstrakurikuler()
+    {
+        return $this->hasMany(Ekstrakurikuler::class, 'id_users'); // Sesuaikan foreign key
+    }
+
+    public function pendaftaran()
+    {
+        return $this->hasMany(Pendaftaran::class);
+    }
 }

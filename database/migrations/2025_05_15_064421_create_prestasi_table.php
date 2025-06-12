@@ -23,7 +23,6 @@ return new class extends Migration
             $table->date('tanggal_kejuaraan');
             $table->enum('tingkat_kejuaraan', ['sekolah', 'kecamatan', 'kabupaten', 'provinsi', 'nasional', 'internasional'])->default('sekolah');
             $table->text('deskripsi')->nullable();
-            $table->string('foto_prestasi', 50);
             $table->timestamps();
         });
     }

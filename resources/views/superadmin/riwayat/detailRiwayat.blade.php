@@ -152,16 +152,20 @@
                                             </td>
                                             <td>
                                                 <div class="btn-group" role="group">
+                                                    @can('detail riwayat siswa')     
                                                     <button type="button" class="btn btn-primary btn-sm" 
                                                             onclick="showDetailModal({{ $index }})">
                                                         <i class="mdi mdi-eye"></i> Detail
                                                     </button>
+                                                    @endcan
+                                                    @can('cetak pdf')                         
                                                     <a href="{{ route('riwayat.cetakPdfSiswa', ['kelas_id' => $kelas->id, 'siswa_id' => $data['siswa']->id, 'periode_id' => $data['periode']->id]) }}" 
-                                                       class="btn btn-danger btn-sm" target="_blank">
+                                                        class="btn btn-danger btn-sm" target="_blank">
                                                         <i class="mdi mdi-file-pdf"></i> PDF
                                                     </a>
+                                                    @endcan
                                                 </div>
-                                            </td>
+                                            </td>       
                                         </tr>
                                         @endforeach
                                     </tbody>

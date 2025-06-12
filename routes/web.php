@@ -146,10 +146,10 @@ use App\Http\Controllers\MonitoringPelanggaranController;
             Route::delete('/{id}', [UserController::class, 'destroy'])->name('users.destroy')->middleware('permission:hapus user');
         });
 
-        Route::prefix('tindakan-siswa')->middleware(['auth'])->group(function () {
+        Route::prefix('tindakan-siswa')->group(function () {
             Route::get('/', [TindakanSiswaController::class, 'index'])->name('tindakan-siswa.index')->middleware('permission:view tindakan-siswa');
             Route::get('/pengaturan/tindakan', [TindakanSiswaController::class, 'edit'])->name('pengaturan-tindakan.edit');
-            Route::post('/pengaturan/tindakan', [TindakanSiswaController::class, 'update'])->name('pengaturan-tindakan.update');
+            Route::post('/pengaturan/tindakan', [TindakanSiswaController::class, 'update'])->name('pengaturan-tindakan.update')->middleware('permission:update batas skor');
 
 
             Route::get('/create/{siswa_id}/{kelas_siswa_id}', [TindakanSiswaController::class, 'create'])->name('tindakan-siswa.create')->middleware('permission:berikan tindakan-siswa');
@@ -168,7 +168,7 @@ use App\Http\Controllers\MonitoringPelanggaranController;
             Route::get('/create', [PeriodeController::class, 'create'])->name('periode.create')->middleware('permission:tambah periode');
             Route::post('/store', [PeriodeController::class, 'store'])->name('periode.store');
             Route::patch('/periodes/{id}/activate', [PeriodeController::class, 'activate'])->name('periode.activate')->middleware('permission:aktif periode');
-            Route::patch('/periode/{id}/deactivate', [PeriodeController::class, 'deactivate'])->name('periode.deactivate')->middleware('permission:non aktif periode');
+            Route::patch('/periode/{id}/deactivate', [PeriodeController::class, 'deactivate'])->name('periode.deactivate')->middleware('permission:aktif periode');
             Route::delete('/{periode}', [PeriodeController::class, 'destroy'])->name('periode.destroy')->middleware('permission:hapus periode');
         });
 

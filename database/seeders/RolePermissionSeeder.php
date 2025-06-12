@@ -71,6 +71,7 @@ class RolePermissionSeeder extends Seeder
             'berikan tindakan-siswa',
             'detail tindakan-siswa',
             'hapus tindakan-siswa',
+            'update batas skor',
 
             'view catatan-absensi',
             'view input-absensi',
@@ -105,6 +106,11 @@ class RolePermissionSeeder extends Seeder
             'tulisan pelanggaran',
             'tulisan absensi',
             'tulisan user management',
+            
+            'view riwayat',
+            'detail riwayat kelas',
+            'cetak pdf',
+            'detail riwayat siswa',
 
         ];
 
@@ -174,6 +180,7 @@ class RolePermissionSeeder extends Seeder
             'berikan tindakan-siswa',
             'detail tindakan-siswa',
             'hapus tindakan-siswa',
+            'update batas skor',
 
             'view monitoring-absensi',
             'detail monitoring-absensi',
@@ -204,6 +211,11 @@ class RolePermissionSeeder extends Seeder
             'tulisan pelanggaran',
             'tulisan absensi',
             'tulisan user management',
+
+            'view riwayat',
+            'detail riwayat kelas',
+            'cetak pdf',
+            'detail riwayat siswa',
         ]);
 
         $bk->givePermissionTo([
@@ -239,6 +251,10 @@ class RolePermissionSeeder extends Seeder
 
             'tulisan pelanggaran',
             'tulisan absensi',
+            'view riwayat',
+            'detail riwayat kelas',
+            'cetak pdf',
+            'detail riwayat siswa',
         ]);
 
         $tatip->givePermissionTo([

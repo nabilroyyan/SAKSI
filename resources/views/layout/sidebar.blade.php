@@ -58,12 +58,14 @@
                 </li>
                 @endcan
 
+                @can('view riwayat')                   
                 <li>
                     <a href="{{ url('riwayat') }}" class="">
                         <i class="bx bx-detail"></i>
                         <span key="t-dashboards">Riwayat Kelas</span>
                     </a>
                 </li>
+                @endcan
 
                 @can('view jurusan')
                 <li>

@@ -76,9 +76,6 @@
                                 <a href="{{ route('monitoring-absensi.index') }}" class="btn btn-secondary">
                                     <i class="fas fa-undo"></i> Reset Filter
                                 </a>
-                                <button type="button" class="btn btn-success" onclick="exportToExcel()">
-                                    <i class="fas fa-file-excel"></i> Export Excel
-                                </button>
                             </div>
                         </div>
                     </form>
@@ -161,18 +158,17 @@
                                     <th>Izin</th>
                                     <th>Alpa</th>
                                     <th>Total</th>
-                                    <th>Persentase Kehadiran</th>
-                                    <th>Aksi</th>
+                                    <th>Persentase Kehadiran</th>>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($siswaAbsensi as $index => $data)
+                                @forelse($siswaAbsensi as $data)
                                     @php
                                         $persentase = $data['total'] > 0 ? round(($data['hadir'] / $data['total']) * 100, 2) : 0;
                                         $badgeClass = $persentase >= 80 ? 'success' : ($persentase >= 60 ? 'warning' : 'danger');
                                     @endphp
                                     <tr>
-                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ $loop->iteration }}</td>
                                         <td>{{ $data['siswa']->nama_siswa }}</td>
                                         <td>{{ $data['kelas_siswa']->kelas->nama_kelas ?? '-' }}</td>
                                         <td>{{ $data['kelas_siswa']->kelas->jurusan->nama_jurusan ?? '-' }}</td>
@@ -192,13 +188,6 @@
                                         <td>
                                             <span class="badge badge-light text-{{ $badgeClass }}">{{ $persentase }}%</span>
                                         </td>
-                                        <td>
-                                            <button type="button" class="btn btn-info btn-sm" 
-                                                    onclick="showDetail({{ $data['siswa']->id }})"
-                                                    data-toggle="tooltip" title="Lihat Detail">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -215,75 +204,6 @@
 </div>
 </div>
 
-<!-- Modal Detail Absensi -->
-<div class="modal fade" id="detailModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Detail Absensi - <span id="modalNamaSiswa"></span></h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="row mb-3">
-                    <div class="col-md-3">
-                        <div class="card bg-success text-white text-center">
-                            <div class="card-body">
-                                <h4 id="modalHadir">0</h4>
-                                <p class="mb-0">Hadir</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card bg-info text-white text-center">
-                            <div class="card-body">
-                                <h4 id="modalSakit">0</h4>
-                                <p class="mb-0">Sakit</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card bg-warning text-white text-center">
-                            <div class="card-body">
-                                <h4 id="modalIzin">0</h4>
-                                <p class="mb-0">Izin</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card bg-danger text-white text-center">
-                            <div class="card-body">
-                                <h4 id="modalAlpa">0</h4>
-                                <p class="mb-0">Alpa</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>Tanggal</th>
-                                <th>Status</th>
-                                <th>Status Surat</th>
-                                <th>Catatan</th>
-                                <th>Petugas</th>
-                                <th>Bukti</th>
-                            </tr>
-                        </thead>
-                        <tbody id="detailAbsensiTable">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- Modal Bukti Surat -->
 <div class="modal fade" id="buktiModal" tabindex="-1" role="dialog">

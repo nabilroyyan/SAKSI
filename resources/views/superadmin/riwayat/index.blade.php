@@ -51,9 +51,11 @@
                                     @endif
                                 </td>
                                 <td>{{ $k->kelasSiswa->count() }}</td>
+                                @can('detail riwayat kelas')                                  
                                 <td>                                      
                                     <a href="{{ route('riwayat.showKelasDetail', $k->id) }}" class="btn btn-success btn-sm">Detail</a>
                                 </td>
+                                @endcan
                             </tr>
                             @endforeach
                             </tbody>

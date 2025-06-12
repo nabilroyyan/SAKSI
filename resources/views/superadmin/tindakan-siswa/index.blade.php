@@ -32,15 +32,17 @@
                             <div class="d-flex justify-content-between mb-3">
                                 <div class="filter-container">
                                 </div>
+                                @can('update batas skor')                                    
                                 <form action="{{ route('pengaturan-tindakan.update') }}" method="POST">
                                     @csrf
                                     <label for="batas_skor">Batas Skor Tindakan</label>
                                     <input type="number" name="batas_skor" 
-                                        value="{{ old('batas_skor', $pengaturan->batas_skor ?? '') }}" 
-                                        class="form-control" style="width: 150px; display: inline-block;"
-                                        min="1" required>
+                                    value="{{ old('batas_skor', $pengaturan->batas_skor ?? '') }}" 
+                                    class="form-control" style="width: 150px; display: inline-block;"
+                                    min="1" required>
                                     <button type="submit" class="btn btn-success">Simpan</button>
                                 </form>
+                                @endcan
                             </div>
 
                     @if($siswaTindakan->count() > 0)

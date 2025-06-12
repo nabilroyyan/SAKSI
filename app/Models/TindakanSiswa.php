@@ -11,7 +11,6 @@ class TindakanSiswa extends Model
         'catatan', 
         'status', 
         'tanggal',
-        'total skor',
         'kelas_siswa_id', 
         'id_siswa', 
         'id_tindakan'];

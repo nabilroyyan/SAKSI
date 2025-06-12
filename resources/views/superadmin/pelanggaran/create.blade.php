@@ -97,9 +97,16 @@
 
                             <div class="form-group">
                                 <label for="tanggal">Tanggal Pelanggaran</label>
-                                <input type="date" class="form-control" id="tanggal" name="tanggal" required 
-                                       value="{{ old('tanggal', date('Y-m-d')) }}"
-                                       max="{{ date('Y-m-d') }}">
+                                <input 
+                                    type="date" 
+                                    class="form-control" 
+                                    id="tanggal" 
+                                    name="tanggal" 
+                                    required
+                                    value="{{ old('tanggal', date('Y-m-d')) }}"
+                                    max="{{ date('Y-m-d') }}" {{-- hanya sampai hari ini --}}
+                                    min="{{ date('Y-m-d', strtotime('-1 year')) }}"
+                                >
                             </div>
                         </div>
                     </div>
@@ -132,7 +139,7 @@
                                 <label class="custom-file-label" for="bukti_pelanggaran" id="label_bukti">Pilih file atau ambil foto</label>
 
                             </div>
-                            <small class="form-text text-muted">Format: JPEG, PNG (Maks. 2MB)</small>
+                            <small class="form-text text-muted">Format: JPEG, PNG (Maks. 10MB)</small>
                             
                             <!-- Preview gambar (opsional) -->
                             <div class="mt-2">
@@ -181,8 +188,8 @@
         label.textContent = file.name;
 
         // Validasi ukuran
-        if (file.size > 2 * 1024 * 1024) {
-            alert('Ukuran file maksimal 2MB!');
+        if (file.size > 2 * 5024 * 5024) {
+            alert('Ukuran file maksimal 10MB!');
             e.target.value = ''; // Reset input
             label.textContent = 'Pilih file atau ambil foto';
             document.getElementById('preview').style.display = 'none';

@@ -65,7 +65,6 @@ class AbsensiController extends Controller
         foreach ($absensiData as $index => $data) {
             if (in_array($data['status'], ['sakit', 'izin'])) {
                 // Set status_surat menjadi 'tertunda' jika sakit atau izin
-                $absensiData[$index]['status_surat'] = 'tertunda';
 
                 if (!$request->hasFile("absensi.$index.foto_surat")) {
                     return back()->withErrors([

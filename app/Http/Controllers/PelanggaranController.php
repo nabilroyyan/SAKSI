@@ -90,7 +90,7 @@ class PelanggaranController extends Controller
             'ket_pelanggaran' => 'required',
             'tanggal' => 'required|date',
             'id_skor_pelanggaran' => 'required|exists:skor_pelanggaran,id',
-            'bukti_pelanggaran' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            'bukti_pelanggaran' => 'nullable|image|mimes:jpeg,png,jpg|max:10048'
         ]);
 
         // Ambil kelas aktif

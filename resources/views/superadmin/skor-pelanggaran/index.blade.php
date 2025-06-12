@@ -52,14 +52,13 @@
                                     <td>{{ $pelanggaran->skor }}</td>
                                     <td>{{ ucfirst($pelanggaran->jenis_pelanggaran) }}</td>
                                     <td>
-                                        @can('hapus skor-pelanggaran')
-                                            
-                                        @endcan
+                                        @can('hapus skor-pelanggaran')      
                                         <form action="{{ route('skor-Pelanggaran.destroy', $pelanggaran->id) }}" method="POST" style="display:inline;">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
                                         </form>
+                                        @endcan
                                     </td>
                                 </tr>
                                 @endforeach

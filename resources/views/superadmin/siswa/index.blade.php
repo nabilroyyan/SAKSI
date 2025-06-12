@@ -60,7 +60,7 @@
 
                         <h4 class="card-title mt-4">Table Siswa</h4>
                         <div class="table-responsive">
-                            <table id="datatable" class="table table-bordered dt-responsive nowrap w-100">
+                            <table id="" class="table table-bordered dt-responsive nowrap w-100">
                                 <thead class="table-light">
                                     <tr>
                                         <th>No</th>

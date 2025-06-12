@@ -90,12 +90,9 @@
                                                             <input type="text" name="absensi[{{ $i }}][catatan]" class="form-control">
                                                             <input type="hidden" name="absensi[{{ $i }}][kelas_siswa_id]" value="{{ $data->id }}">
                                                         </td>
-                                                        <td>
-                                                            <input type="file" name="absensi[{{ $i }}][foto_surat]" 
-                                                                   class="form-control foto-surat-{{ $i }}" 
-                                                                   accept=".jpg,.jpeg,.png,.pdf" disabled>
-                                                            <small class="text-muted">Wajib jika sakit/izin</small>
-                                                        </td>
+                                                       @foreach ($siswas as $index => $siswa)
+                                                            <input type="file" class="form-control form-control-sm" name="absensi[{{ $index }}][foto_surat]">
+                                                        @endforeach
                                                     </tr>
                                                 @endforeach
                                             </tbody>

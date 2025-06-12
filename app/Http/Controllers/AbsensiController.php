@@ -51,7 +51,6 @@ class AbsensiController extends Controller
     }
 
 
-    // Menyimpan data absensi
     public function store(Request $request)
     {
         $request->validate([
@@ -65,43 +64,54 @@ class AbsensiController extends Controller
         $tanggalHariIni = Carbon::today()->toDateString();
 
         foreach ($request->absensi as $index => $data) {
-            // Validasi ekstra untuk status
-            if (!in_array($data['status'], ['hadir', 'sakit', 'izin', 'alpa'])) {
-                Log::error("Status tidak valid di index $index", ['status' => $data['status']]);
-                continue; // skip record ini
-            }
+            try {
+                if (!in_array($data['status'], ['hadir', 'sakit', 'izin', 'alpa'])) {
+                    Log::error("Status tidak valid di index $index", ['status' => $data['status']]);
+                    continue;
+                }
 
-            // Cari kelas_siswa
-            $kelasSiswa = KelasSiswa::findOrFail($data['kelas_siswa_id']);
+                $kelasSiswa = KelasSiswa::findOrFail($data['kelas_siswa_id']);
 
-            $absen = new Absensi();
-            $absen->status = $data['status'];
-            $absen->hari_tanggal = $tanggalHariIni;
-            $absen->status_surat = in_array($data['status'], ['sakit', 'izin']) ? 'tertunda' : 'diterima';
-            $absen->catatan = $data['catatan'] ?? null;
-            $absen->id_siswa = $kelasSiswa->id_siswa;
-            $absen->kelas_siswa_id = $kelasSiswa->id;
-            $absen->id_users = $userId;
+                $absen = new Absensi();
+                $absen->status = $data['status'];
+                $absen->hari_tanggal = $tanggalHariIni;
+                $absen->catatan = $data['catatan'] ?? null;
+                $absen->id_siswa = $kelasSiswa->id_siswa;
+                $absen->kelas_siswa_id = $kelasSiswa->id;
+                $absen->id_users = $userId;
 
-            // Upload file jika ada
-            if ($request->hasFile("absensi.$index.foto_surat")) {
-                $file = $request->file("absensi.$index.foto_surat");
-                
-                if ($file->isValid()) {
-                    $path = $file->store('foto_surat', 'public');
-                    $absen->foto_surat = $path;
-                    Log::info("Upload berhasil untuk siswa index $index", ['path' => $path]);
+                // Cek jika status memerlukan surat
+                $needsSurat = in_array($data['status'], ['sakit', 'izin']);
+                $absen->status_surat = $needsSurat ? 'tertunda' : 'diterima';
+
+                // Penanganan file upload jika ada
+                if ($request->hasFile("absensi.$index.foto_surat")) {
+                    $file = $request->file("absensi.$index.foto_surat");
+
+                    if ($file && $file->isValid()) {
+                        $path = $file->store('foto_surat', 'public');
+                        $absen->foto_surat = $path;
+                        $absen->status_surat = 'tertunda'; // default ketika ada file
+                        Log::info("Upload berhasil untuk index $index", ['path' => $path]);
+                    } else {
+                        Log::warning("File upload tidak valid untuk index $index");
+                    }
                 } else {
-                    Log::warning("File upload tidak valid untuk index $index");
+                    if ($needsSurat) {
+                        Log::warning("Status {$data['status']} tanpa foto_surat di index $index");
+                    }
                 }
-            } else {
-                // Optional log jika kamu ingin tahu file tidak ada tapi status sakit/izin
-                if (in_array($data['status'], ['sakit', 'izin'])) {
-                    Log::warning("Siswa index $index status {$data['status']} tanpa surat");
-                }
-            }
 
-            $absen->save();
+                $absen->save();
+
+            } catch (\Exception $e) {
+                Log::error("Gagal menyimpan absensi untuk index $index", [
+                    'error' => $e->getMessage(),
+                    'data' => $data
+                ]);
+                // Opsional: lanjut ke loop berikutnya atau hentikan jika perlu
+                continue;
+            }
         }
 
         return redirect()->route('createHariIni')->with('success', 'Absensi berhasil disimpan.');

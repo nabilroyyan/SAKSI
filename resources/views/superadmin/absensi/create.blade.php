@@ -36,7 +36,7 @@
 
             @if($errors->any())
                 <div class="alert alert-danger">
-                    <ul>
+                    <ul class="mb-0">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
@@ -51,7 +51,7 @@
                             @if($siswaBelumAbsen->isEmpty())
                                 <div class="alert alert-info">Semua siswa sudah diabsen hari ini.</div>
                             @else
-                                <form action="{{ route('absensi.store') }}" method="POST" enctype="multipart/form-data">
+                                <form id="absensiForm" action="{{ route('absensi.store') }}" method="POST" enctype="multipart/form-data">
                                     @csrf
 
                                     <div class="table-responsive">
@@ -87,12 +87,16 @@
                                                             <input type="radio" name="absensi[{{ $i }}][status]" value="alpa" onchange="toggleFotoSurat({{ $i }})" required>                         
                                                         </td>
                                                         <td>
-                                                            <input type="text" name="absensi[{{ $i }}][catatan]" class="form-control">
+                                                            <input type="text" name="absensi[{{ $i }}][catatan]" class="form-control" maxlength="500">
                                                             <input type="hidden" name="absensi[{{ $i }}][kelas_siswa_id]" value="{{ $data->id }}">
                                                         </td>
-                                                       @foreach ($siswas as $index => $siswa)
-                                                            <input type="file" class="form-control form-control-sm" name="absensi[{{ $index }}][foto_surat]">
-                                                        @endforeach
+                                                        <td>
+                                                            <input type="file" name="absensi[{{ $i }}][foto_surat]" 
+                                                                   class="form-control foto-surat-{{ $i }}" 
+                                                                   accept=".jpg,.jpeg,.png,.pdf" disabled>
+                                                            <small class="text-muted">Wajib jika sakit/izin (Max: 5MB)</small>
+                                                            <div class="invalid-feedback" id="error-foto-{{ $i }}"></div>
+                                                        </td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
@@ -100,7 +104,10 @@
                                     </div>
 
                                     <div class="mt-3">
-                                        <button type="submit" class="btn btn-primary">Simpan Absensi</button>
+                                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                                            <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                                            Simpan Absensi
+                                        </button>
                                     </div>
                                 </form>
                             @endif
@@ -117,6 +124,7 @@
     function toggleFotoSurat(index) {
         const radioButtons = document.querySelectorAll(`input[name="absensi[${index}][status]"]`);
         const fotoSuratInput = document.querySelector(`.foto-surat-${index}`);
+        const errorDiv = document.getElementById(`error-foto-${index}`);
         
         let selectedValue = '';
         radioButtons.forEach(radio => {
@@ -124,6 +132,12 @@
                 selectedValue = radio.value;
             }
         });
+        
+        // Clear previous error
+        if (errorDiv) {
+            errorDiv.textContent = '';
+            fotoSuratInput.classList.remove('is-invalid');
+        }
         
         // Enable/disable foto surat input berdasarkan status
         if (selectedValue === 'sakit' || selectedValue === 'izin') {
@@ -136,6 +150,39 @@
             fotoSuratInput.value = '';
             fotoSuratInput.parentElement.classList.remove('bg-light');
         }
+    }
+
+    // File validation function
+    function validateFile(input, index) {
+        const file = input.files[0];
+        const errorDiv = document.getElementById(`error-foto-${index}`);
+        const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+        
+        if (file) {
+            // Check file size
+            if (file.size > maxSize) {
+                errorDiv.textContent = 'Ukuran file terlalu besar. Maksimal 5MB.';
+                input.classList.add('is-invalid');
+                input.value = '';
+                return false;
+            }
+            
+            // Check file type
+            if (!allowedTypes.includes(file.type)) {
+                errorDiv.textContent = 'Format file tidak didukung. Gunakan JPG, PNG, atau PDF.';
+                input.classList.add('is-invalid');
+                input.value = '';
+                return false;
+            }
+            
+            // If validation passes
+            errorDiv.textContent = '';
+            input.classList.remove('is-invalid');
+            return true;
+        }
+        
+        return true;
     }
 
     // Check All Hadir
@@ -151,6 +198,60 @@
             });
         }
 
+        // Add file validation event listeners
+        const jumlahBaris = {{ count($siswaBelumAbsen) }};
+        for (let i = 0; i < jumlahBaris; i++) {
+            const fileInput = document.querySelector(`.foto-surat-${i}`);
+            if (fileInput) {
+                fileInput.addEventListener('change', function() {
+                    validateFile(this, i);
+                });
+            }
+            
+            // Initialize state
+            toggleFotoSurat(i);
+        }
+
+        // Form submission validation
+        const form = document.getElementById('absensiForm');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        if (form && submitBtn) {
+            form.addEventListener('submit', function(e) {
+                let isValid = true;
+                const spinner = submitBtn.querySelector('.spinner-border');
+                
+                // Validate required foto_surat for sakit/izin
+                for (let i = 0; i < jumlahBaris; i++) {
+                    const statusInputs = document.querySelectorAll(`input[name="absensi[${i}][status]"]`);
+                    const fotoInput = document.querySelector(`.foto-surat-${i}`);
+                    const errorDiv = document.getElementById(`error-foto-${i}`);
+                    
+                    let selectedStatus = '';
+                    statusInputs.forEach(input => {
+                        if (input.checked) selectedStatus = input.value;
+                    });
+                    
+                    if ((selectedStatus === 'sakit' || selectedStatus === 'izin') && !fotoInput.files[0]) {
+                        errorDiv.textContent = `Foto surat wajib diupload untuk status ${selectedStatus}.`;
+                        fotoInput.classList.add('is-invalid');
+                        isValid = false;
+                    }
+                }
+                
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('Mohon lengkapi semua field yang diperlukan!');
+                    return;
+                }
+                
+                // Show loading state
+                submitBtn.disabled = true;
+                spinner.classList.remove('d-none');
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Menyimpan...';
+            });
+        }
+
         // Initialize DataTable
         $('#tableAbsensi').DataTable({
             responsive: false,
@@ -160,14 +261,6 @@
             ordering: false
         });
     });
-
-    // Set kondisi awal saat halaman pertama kali dimuat
-document.addEventListener('DOMContentLoaded', function() {
-    const jumlahBaris = {{ count($siswaBelumAbsen) }};
-    for (let i = 0; i < jumlahBaris; i++) {
-        toggleFotoSurat(i);
-    }
-});
 </script>
 @endpush
 
@@ -178,6 +271,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     .bg-light {
         background-color: #f8f9fa !important;
+    }
+    .is-invalid {
+        border-color: #dc3545;
+    }
+    .invalid-feedback {
+        display: block;
+        color: #dc3545;
+        font-size: 0.875em;
+        margin-top: 0.25rem;
+    }
+    .spinner-border-sm {
+        width: 1rem;
+        height: 1rem;
     }
 </style>
 @endpush

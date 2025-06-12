@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\Kelas;
 use App\Models\Absensi;
-use App\Models\BKKelas; // Pastikan konsisten dengan nama model
 use App\Models\KelasSiswa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\BKKelas; // Pastikan konsisten dengan nama model
 
 class AbsensiController extends Controller
 {
@@ -62,14 +63,16 @@ class AbsensiController extends Controller
 
         $absensiData = $request->absensi;
 
-        foreach ($request->absensi as $index => $data) {
-            $status = $data['status'];
-            $foto = $request->file("absensi.$index.foto_surat");
-
-            if (in_array($status, ['sakit', 'izin'])) {
-                if (!$foto || !$foto->isValid()) {
-                    return back()->withErrors(["Foto surat wajib diunggah untuk siswa yang $status."])->withInput();
-                }
+            foreach ($request->absensi as $index => $data) {
+            if ($request->hasFile("absensi.$index.foto_surat")) {
+                $file = $request->file("absensi.$index.foto_surat");
+                Log::info("Siswa $index upload: ", [
+                    'original_name' => $file->getClientOriginalName(),
+                    'size' => $file->getSize(),
+                    'isValid' => $file->isValid(),
+                ]);
+            } else {
+                Log::warning("Siswa $index tidak berhasil mengunggah foto_surat");
             }
         }
 

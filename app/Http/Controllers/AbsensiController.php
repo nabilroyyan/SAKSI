@@ -61,42 +61,44 @@ class AbsensiController extends Controller
             'absensi.*.foto_surat' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10048',
         ]);
 
-        $absensiData = $request->absensi;
-
-            foreach ($request->absensi as $index => $data) {
-            if ($request->hasFile("absensi.$index.foto_surat")) {
-                $file = $request->file("absensi.$index.foto_surat");
-                Log::info("Siswa $index upload: ", [
-                    'original_name' => $file->getClientOriginalName(),
-                    'size' => $file->getSize(),
-                    'isValid' => $file->isValid(),
-                ]);
-            } else {
-                Log::warning("Siswa $index tidak berhasil mengunggah foto_surat");
-            }
-        }
-
         $userId = Auth::id();
         $tanggalHariIni = Carbon::today()->toDateString();
 
         foreach ($request->absensi as $index => $data) {
+            // Validasi ekstra untuk status
+            if (!in_array($data['status'], ['hadir', 'sakit', 'izin', 'alpa'])) {
+                Log::error("Status tidak valid di index $index", ['status' => $data['status']]);
+                continue; // skip record ini
+            }
+
+            // Cari kelas_siswa
             $kelasSiswa = KelasSiswa::findOrFail($data['kelas_siswa_id']);
-            
+
             $absen = new Absensi();
             $absen->status = $data['status'];
             $absen->hari_tanggal = $tanggalHariIni;
-            // Fix: gunakan 'tertunda' bukan 'tertunda'
             $absen->status_surat = in_array($data['status'], ['sakit', 'izin']) ? 'tertunda' : 'diterima';
             $absen->catatan = $data['catatan'] ?? null;
             $absen->id_siswa = $kelasSiswa->id_siswa;
             $absen->kelas_siswa_id = $kelasSiswa->id;
             $absen->id_users = $userId;
 
-            // Handle file upload
+            // Upload file jika ada
             if ($request->hasFile("absensi.$index.foto_surat")) {
                 $file = $request->file("absensi.$index.foto_surat");
-                $path = $file->store('foto_surat', 'public');
-                $absen->foto_surat = $path;
+                
+                if ($file->isValid()) {
+                    $path = $file->store('foto_surat', 'public');
+                    $absen->foto_surat = $path;
+                    Log::info("Upload berhasil untuk siswa index $index", ['path' => $path]);
+                } else {
+                    Log::warning("File upload tidak valid untuk index $index");
+                }
+            } else {
+                // Optional log jika kamu ingin tahu file tidak ada tapi status sakit/izin
+                if (in_array($data['status'], ['sakit', 'izin'])) {
+                    Log::warning("Siswa index $index status {$data['status']} tanpa surat");
+                }
             }
 
             $absen->save();
@@ -104,6 +106,7 @@ class AbsensiController extends Controller
 
         return redirect()->route('createHariIni')->with('success', 'Absensi berhasil disimpan.');
     }
+
 
     // Riwayat absensi hari ini
     public function riwayatHariIni()

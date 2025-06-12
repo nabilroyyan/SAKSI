@@ -156,6 +156,10 @@
                                                             onclick="showDetailModal({{ $index }})">
                                                         <i class="mdi mdi-eye"></i> Detail
                                                     </button>
+                                                    <a href="{{ route('riwayat.cetakPdfSiswa', ['kelas_id' => $kelas->id, 'siswa_id' => $data['siswa']->id, 'periode_id' => $data['periode']->id]) }}" 
+                                                       class="btn btn-danger btn-sm" target="_blank">
+                                                        <i class="mdi mdi-file-pdf"></i> PDF
+                                                    </a>
                                                 </div>
                                             </td>
                                         </tr>

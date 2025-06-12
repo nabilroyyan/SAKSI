@@ -173,8 +173,9 @@ use App\Http\Controllers\MonitoringPelanggaranController;
         });
 
         Route::prefix('riwayat')->group(function () {
-            Route::get('/', [RiwayatKelasController::class, 'index'])->name('riwayat.index');
-            Route::get('/{id}/riwayat', [RiwayatKelasController::class, 'showKelasDetail'])->name('riwayat.showKelasDetail');
+            Route::get('/', [RiwayatKelasController::class, 'index'])->name('riwayat.index')->middleware('permission:view riwayat');
+            Route::get('/{id}/riwayat', [RiwayatKelasController::class, 'showKelasDetail'])->name('riwayat.showKelasDetail')->middleware('permission:detail riwayat kelas');
+            Route::get('/riwayat/cetak-pdf/{kelas_id}/{siswa_id}/{periode_id}', [RiwayatKelasController::class, 'cetakPdfSiswa'])->name('riwayat.cetakPdfSiswa')->middleware('permission: cetak pdf');
         });
 
     });

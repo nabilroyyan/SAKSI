@@ -57,7 +57,7 @@ class AbsensiController extends Controller
             'absensi.*.kelas_siswa_id' => 'required|exists:kelas_siswa,id',
             'absensi.*.status' => 'required|in:hadir,sakit,izin,alpa',
             'absensi.*.catatan' => 'nullable|string',
-            'absensi.*.foto_surat' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'absensi.*.foto_surat' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10048',
         ]);
 
         $absensiData = $request->absensi;

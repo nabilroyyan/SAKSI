@@ -58,6 +58,13 @@
                 </li>
                 @endcan
 
+                <li>
+                    <a href="{{ url('riwayat') }}" class="">
+                        <i class="bx bx-detail"></i>
+                        <span key="t-dashboards">Riwayat Kelas</span>
+                    </a>
+                </li>
+
                 @can('view jurusan')
                 <li>
                     <a href="{{ url('/jurusan') }}" class="">

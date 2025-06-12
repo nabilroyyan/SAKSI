@@ -12,6 +12,7 @@ use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\PeriodeController;
 use App\Http\Controllers\DasboardController;
 use App\Http\Controllers\PelanggaranController;
+use App\Http\Controllers\RiwayatKelasController;
 use App\Http\Controllers\TindakanSiswaController;
 use App\Http\Controllers\SkorPelanggaranController;
 use App\Http\Controllers\KategoriTindakanController;
@@ -71,6 +72,7 @@ use App\Http\Controllers\MonitoringPelanggaranController;
             Route::post('/kelas/naikkan-bulk-siswa', [KelasController::class, 'naikkanBulkSiswa'])->name('kelas.naikkanBulkSiswa')->middleware('permission:naik kelas');
             Route::post('/kelas/bulk-periode', [KelasController::class, 'bulkPeriode'])->name('kelas.bulkPeriode')->middleware('permission:update periode');
             Route::delete('/kelas/hapus-siswa/{id}', [KelasController::class, 'hapusSiswa'])->name('kelas.hapusSiswa')->middleware('permission:hapus-siswa kelas');
+            
 
         });
 
@@ -170,6 +172,9 @@ use App\Http\Controllers\MonitoringPelanggaranController;
             Route::delete('/{periode}', [PeriodeController::class, 'destroy'])->name('periode.destroy')->middleware('permission:hapus periode');
         });
 
-
+        Route::prefix('riwayat')->group(function () {
+            Route::get('/', [RiwayatKelasController::class, 'index'])->name('riwayat.index');
+            Route::get('/{id}/riwayat', [RiwayatKelasController::class, 'showKelasDetail'])->name('riwayat.showKelasDetail');
+        });
 
     });

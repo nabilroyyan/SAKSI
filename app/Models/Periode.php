@@ -14,4 +14,6 @@ class Periode extends Model
     {
         return $this->hasMany(KelasSiswa::class, 'periode_id');
     }
+
+    
 }

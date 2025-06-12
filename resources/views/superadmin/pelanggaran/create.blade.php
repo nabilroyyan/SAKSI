@@ -188,7 +188,7 @@
         label.textContent = file.name;
 
         // Validasi ukuran
-        if (file.size > 2 * 5024 * 5024) {
+        if (file.size > 10 * 1024 * 1024) {
             alert('Ukuran file maksimal 10MB!');
             e.target.value = ''; // Reset input
             label.textContent = 'Pilih file atau ambil foto';

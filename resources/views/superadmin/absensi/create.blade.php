@@ -156,13 +156,21 @@
 
         // Initialize DataTable
         $('#tableAbsensi').DataTable({
-            responsive: true,
+            responsive: false,
             paging: false,
             searching: false,
             info: false,
             ordering: false
         });
     });
+
+    // Set kondisi awal saat halaman pertama kali dimuat
+document.addEventListener('DOMContentLoaded', function() {
+    const jumlahBaris = {{ count($siswaBelumAbsen) }};
+    for (let i = 0; i < jumlahBaris; i++) {
+        toggleFotoSurat(i);
+    }
+});
 </script>
 @endpush
 

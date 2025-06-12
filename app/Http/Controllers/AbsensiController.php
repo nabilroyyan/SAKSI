@@ -62,14 +62,13 @@ class AbsensiController extends Controller
 
         $absensiData = $request->absensi;
 
-        foreach ($absensiData as $index => $data) {
-            if (in_array($data['status'], ['sakit', 'izin'])) {
-                // Set status_surat menjadi 'tertunda' jika sakit atau izin
+        foreach ($request->absensi as $index => $data) {
+            $status = $data['status'];
+            $foto = $request->file("absensi.$index.foto_surat");
 
-                if (!$request->hasFile("absensi.$index.foto_surat")) {
-                    return back()->withErrors([
-                        "absensi.$index.foto_surat" => "Foto surat wajib diunggah jika status sakit atau izin."
-                    ])->withInput();
+            if (in_array($status, ['sakit', 'izin'])) {
+                if (!$foto || !$foto->isValid()) {
+                    return back()->withErrors(["Foto surat wajib diunggah untuk siswa yang $status."])->withInput();
                 }
             }
         }

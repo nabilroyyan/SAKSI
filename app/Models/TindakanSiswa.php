@@ -28,7 +28,7 @@ class TindakanSiswa extends Model
 
     public function kelasSiswa()
     {
-        return $this->belongsTo(KelasSiswa::class, 'kelas_siswa_id.a');
+        return $this->belongsTo(KelasSiswa::class, 'kelas_siswa_id');
     }
 
 }

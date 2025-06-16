@@ -208,11 +208,11 @@
                                     <td>{{ $absensi->siswa->nama_siswa }}</td>
                                     <td>
                                         @if($absensi->status == 'sakit')
-                                            <span class="badge badge-info">Sakit</span>
+                                            <span class="badge badge-info" style="color: #0c5460;">Sakit</span>
                                         @elseif($absensi->status == 'izin')
-                                            <span class="badge badge-warning">Izin</span>
+                                            <span class="badge badge-warning" style="color: #856404;">Izin</span>
                                         @else
-                                            <span class="badge badge-danger">Alpa</span>
+                                            <span class="badge badge-danger" style="color: #721c24;">Alpa</span>
                                         @endif
                                     </td>
                                     <td>{{ Str::limit($absensi->catatan, 30) }}</td>

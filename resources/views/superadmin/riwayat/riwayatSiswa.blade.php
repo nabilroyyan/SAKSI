@@ -163,9 +163,9 @@
         <table class="info-table">
             <tr>
                 <td class="label">NIS</td>
-                <td>{{ $siswa->nis }}</td>
+                <td>{{ $siswa->nis_nip }}</td>
                 <td class="label">Nama Lengkap</td>
-                <td>{{ $siswa->nama }}</td>
+                <td>{{ $siswa->nama_siswa }}</td>
             </tr>
             <tr>
                 <td class="label">Jenis Kelamin</td>

@@ -151,7 +151,7 @@
                                 <tr>
                                     <th>No</th>
                                     <th>Nama Siswa</th>
-                                    <th>Kelas</th>
+                                    <th>Tinkat</th>
                                     <th>Jurusan</th>
                                     <th>Hadir</th>
                                     <th>Sakit</th>
@@ -170,7 +170,7 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $data['siswa']->nama_siswa }}</td>
-                                        <td>{{ $data['kelas_siswa']->kelas->nama_kelas ?? '-' }}</td>
+                                        <td>{{ $data['kelas_siswa']->kelas->tingkat ?? '-' }}</td>
                                         <td>{{ $data['kelas_siswa']->kelas->jurusan->nama_jurusan ?? '-' }}</td>
                                         <td>
                                             <span class="badge badge-light text-success">{{ $data['hadir'] }}</span>

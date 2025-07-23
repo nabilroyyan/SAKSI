@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('tahun_masuk');
             $table->enum('status', ['aktif','tidak_aktif'])->default('aktif');
             $table->string('kode')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });        
     }

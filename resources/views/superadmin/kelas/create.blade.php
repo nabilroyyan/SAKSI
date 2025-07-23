@@ -62,7 +62,7 @@
                                 </div>
 
                                 <div class="col-sm-6">
-                                 <div class="mb-3">
+                                    <div class="mb-3">
                                         <label for="kelas">Jurusan</label>
                                         <select id="id_jurusan" name="id_jurusan" class="form-control">
                                             <option value="">- Pilih Jurusan -</option>
@@ -71,6 +71,12 @@
                                             @endforeach
                                         </select>
                                     </div>
+                                        <div class="mb-3">
+                                                <label for="manufacturername">Nama Kelas</label>
+                                                <input id="nama_kelas" name="nama_kelas" type="text" class="form-control" placeholder="Masukkan Nama Kelas">
+                                            </div>
+                                    </div>
+
                                     <div class="mb-3">
                                         <input type="hidden" id="stt" name="stt" value="aktif">
                                     </div>

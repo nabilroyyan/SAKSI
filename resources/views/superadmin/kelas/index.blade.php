@@ -63,6 +63,7 @@
                                     <th style="width: 5%;">No</th>
                                     <th>Kelas</th>
                                     <th>Jurusan</th>
+                                    <th>Nama Kelas</th>
                                     <th>Status</th>
                                     <th>total Siswa</th>
                                     <th>Action</th>
@@ -75,6 +76,7 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $k->tingkat }}</td>
                                 <td>{{ $k->jurusan->nama_jurusan }}</td>
+                                <td>{{ $k->nama_kelas }}</td>
                                 <td>
                                     @if($k->stt == 'aktif')
                                         <span class="badge bg-primary">Aktif</span>

@@ -50,7 +50,7 @@
                                         <td>{{ $item->siswa->nama_siswa }}</td>
                                         <td>
                                             {{ $item->kelasSiswa->kelas->tingkat }} 
-                                            {{ $item->kelasSiswa->kelas->jurusan->nama_jurusan }}
+                                            {{ $item->kelasSiswa->kelas->nama_kelas }}
                                         </td>
                                         <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d/m/Y') }}</td>
                                         <td>{{ $item->ket_pelanggaran }}</td>

@@ -49,6 +49,7 @@ class KelasController extends Controller
         $request->validate([
             'tingkat' => 'required|in:X,XI,XII',
             'id_jurusan' => 'required|exists:jurusan,id',
+            'nama_kelas' => 'required|string|max:255',
             'stt' => 'required|in:tidak_aktif,aktif',
         ]);
 
@@ -56,6 +57,8 @@ class KelasController extends Controller
             'tingkat' => $request->tingkat,
             'id_jurusan' => $request->id_jurusan,
             'id_users' => $request->id_users ?? null,
+            'nama_kelas' => $request->nama_kelas,
+            'id_wakel' => $request->id_wakel ?? null, // Optional,
             'stt' => $request->stt,
         ]);
 
@@ -80,7 +83,9 @@ class KelasController extends Controller
         // Validasi data
         $request->validate([
             'id_users' => 'nullable|exists:users,id',
-            'stt' => 'required|in:tidak_aktif,aktif'
+            'stt' => 'required|in:tidak_aktif,aktif',
+            'nama_kelas' => 'required|string|max:255',
+            'id_wakel' => 'nullable|exists:users,id', // Optional, jika
         ]);
 
         // Ambil data kelas
@@ -93,14 +98,13 @@ class KelasController extends Controller
         // Update data
         $kelas->update([
             'id_users' => $request->id_users,
-            'stt' => $request->stt
+            'stt' => $request->stt,
+            'nama_kelas' => $request->nama_kelas,
+            'id_wakel' => $request->id_wakel,
         ]);
 
         return redirect()->route('kelas.index')->with('success', 'Data kelas berhasil diperbarui.');
     }
-
-
-   // KelasController.php
 
     public function naikkanBulkSiswa(Request $request)
     {
@@ -108,23 +112,18 @@ class KelasController extends Controller
             'siswa_ids' => 'required',
             'kelas_siswa_ids' => 'required',
             'status' => 'required|in:naik,tidak_naik,lulus',
-            'periode_id' => 'required|exists:periode,id' // Diperbaiki: exists validation
+            'periode_id' => 'required|exists:periode,id',
+            'id_kelas_tujuan' => 'required_if:status,naik|exists:kelas,id' // hanya wajib jika status naik
         ]);
 
         $siswaIds = explode(',', $request->siswa_ids);
         $kelasSiswaIds = explode(',', $request->kelas_siswa_ids);
         $status = $request->status;
 
-        // Ambil periode berdasarkan ID yang dipilih
         $periode = Periode::findOrFail($request->periode_id);
-
-        // Pastikan periode yang dipilih aktif
         if ($periode->is_active !== 'aktif') {
             return redirect()->back()->with('error', 'Periode yang dipilih tidak aktif.');
         }
-
-        // Urutan tingkat enum
-        $tingkatUrutan = ['X', 'XI', 'XII']; // Sesuai dengan enum database
 
         DB::beginTransaction();
         try {
@@ -141,42 +140,24 @@ class KelasController extends Controller
                 ]);
 
                 if ($status === 'naik') {
-                    $currentTingkat = $kelas->tingkat;
-                    $currentIndex = array_search($currentTingkat, $tingkatUrutan);
-                    
-                    // Validasi tingkat saat ini
-                    if ($currentIndex === false) {
-                        throw new \Exception("Tingkat kelas '$currentTingkat' tidak valid.");
-                    }
-                    
-                    $nextIndex = $currentIndex + 1;
+                    $kelasBaru = Kelas::findOrFail($request->id_kelas_tujuan);
 
-                    // Cek apakah ada tingkat selanjutnya
-                    if ($nextIndex >= count($tingkatUrutan)) {
-                        // Sudah di tingkat terakhir (XII), tidak bisa naik lagi
-                        // Buat entry baru dengan status lulus
-                        KelasSiswa::create([
-                            'id_siswa' => $siswaId,
-                            'id_kelas' => $kelas->id,
-                            'status' => 'lulus',
-                            'is_active' => 'aktif',
-                            'periode_id' => $periode->id
-                        ]);
-                        continue;
+                    // Validasi jurusan sama
+                    if ($kelasBaru->id_jurusan !== $kelas->id_jurusan) {
+                        throw new \Exception("Kelas tujuan harus memiliki jurusan yang sama.");
                     }
 
-                    $nextTingkat = $tingkatUrutan[$nextIndex];
-
-                    // Cari kelas dengan tingkat selanjutnya dan jurusan yang sama
-                    $kelasBaru = Kelas::where('tingkat', $nextTingkat)
-                        ->where('id_jurusan', $kelas->id_jurusan)
-                        ->first();
-
-                    if (!$kelasBaru) {
-                        throw new \Exception("Kelas tingkat '$nextTingkat' untuk jurusan {$kelas->jurusan->nama_jurusan} tidak ditemukan.");
+                    // Validasi tingkat lebih tinggi
+                    $urutanTingkat = ['X' => 1, 'XI' => 2, 'XII' => 3];
+                    if (
+                        !isset($urutanTingkat[$kelas->tingkat]) ||
+                        !isset($urutanTingkat[$kelasBaru->tingkat]) ||
+                        $urutanTingkat[$kelasBaru->tingkat] <= $urutanTingkat[$kelas->tingkat]
+                    ) {
+                        throw new \Exception("Kelas tujuan harus memiliki tingkat lebih tinggi dari kelas sekarang.");
                     }
 
-                    // Tambahkan ke kelas baru
+                    // Simpan kelas baru
                     KelasSiswa::create([
                         'id_siswa' => $siswaId,
                         'id_kelas' => $kelasBaru->id,
@@ -184,9 +165,9 @@ class KelasController extends Controller
                         'is_active' => 'aktif',
                         'periode_id' => $periode->id
                     ]);
-                    
+
                 } elseif ($status === 'tidak_naik') {
-                    // Tetap di kelas sekarang dengan status tidak naik
+                    // Tetap di kelas saat ini
                     KelasSiswa::create([
                         'id_siswa' => $siswaId,
                         'id_kelas' => $kelas->id,
@@ -194,38 +175,33 @@ class KelasController extends Controller
                         'is_active' => 'aktif',
                         'periode_id' => $periode->id
                     ]);
-                    
+
                 } elseif ($status === 'lulus') {
-                    // Hanya bisa meluluskan jika tingkat kelas adalah XII
                     if ($kelas->tingkat !== 'XII') {
                         throw new \Exception("Siswa hanya bisa diluluskan jika berada di tingkat XII.");
                     }
-                    // Jika lulus, cukup update is_active menjadi non_aktif pada entri lama
-                    $kelasSiswa->update([
-                        'status' => 'lulus',
-                        'is_active' => 'non_aktif'
-                    ]);
+                    // Sudah diupdate di atas (nonaktif + status lulus)
                 }
             }
 
             DB::commit();
-            
-            // Pesan sukses yang lebih informatif
-            $message = match($status) {
-                'naik' => 'Siswa berhasil dinaikkan ke kelas berikutnya.',
+
+            $message = match ($status) {
+                'naik' => 'Siswa berhasil dinaikkan ke kelas yang dipilih.',
                 'tidak_naik' => 'Status siswa berhasil diubah menjadi tidak naik kelas.',
                 'lulus' => 'Siswa berhasil dinyatakan lulus.',
                 default => 'Status siswa berhasil diperbarui.'
             };
-            
+
             return redirect()->back()->with('success', $message);
-            
+
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error in naikkanBulkSiswa: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Gagal memperbarui status siswa: ' . $e->getMessage());
         }
     }
+
 
     public function bulkPeriode(Request $request)
     {
@@ -289,14 +265,35 @@ class KelasController extends Controller
     public function showSiswaByKelas($id_kelas)
     {
         $kelas = Kelas::with('jurusan')->findOrFail($id_kelas);
-        $allKelas = Kelas::with('jurusan')->where('id', '!=', $id_kelas)->get();
+        $allKelas = Kelas::with('jurusan')
+            ->where('id', '!=', $id_kelas)
+            ->get();
 
         $periodes = Periode::all();
         if ($periodes->isEmpty()) {
             return redirect()->back()->with('error', 'Data periode tidak ditemukan.');
         }
 
-        // Ambil semua siswa di kelas ini untuk semua periode
+        // Mapping tingkat ke angka untuk membandingkan
+        $tingkatUrutan = ['X' => 1, 'XI' => 2, 'XII' => 3];
+        $currentTingkat = $tingkatUrutan[$kelas->tingkat] ?? null;
+
+        if (is_null($currentTingkat)) {
+            return redirect()->back()->with('error', 'Tingkat kelas tidak valid.');
+        }
+
+        // Ambil kelas tujuan dengan tingkat lebih tinggi dalam jurusan yang sama
+        $kelas_tujuan = Kelas::where('id_jurusan', $kelas->id_jurusan)
+            ->where(function ($query) use ($tingkatUrutan, $currentTingkat) {
+                foreach ($tingkatUrutan as $tingkat => $urutan) {
+                    if ($urutan > $currentTingkat) {
+                        $query->orWhere('tingkat', $tingkat);
+                    }
+                }
+            })
+            ->get();
+
+        // Ambil siswa yang aktif di kelas ini
         $siswaDiKelas = KelasSiswa::with(['siswa', 'kelas', 'periode'])
             ->where('id_kelas', $id_kelas)
             ->where('is_active', 'aktif')
@@ -307,9 +304,11 @@ class KelasController extends Controller
             'kelas' => $kelas,
             'siswaDiKelas' => $siswaDiKelas,
             'allKelas' => $allKelas,
-            'periodes' => $periodes
+            'periodes' => $periodes,
+            'kelas_tujuan' => $kelas_tujuan
         ]);
     }
+
 
 
 

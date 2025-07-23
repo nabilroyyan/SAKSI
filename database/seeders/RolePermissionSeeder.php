@@ -178,6 +178,10 @@ class RolePermissionSeeder extends Seeder
             'detail pelanggaran',
 
             'view monitoring-pelanggaran',
+            'detail monitoring-pelanggaran',
+            'export monitoring-pelanggaran',
+
+
             'view tindakan-siswa',
             'update tindakan-siswa',
             'berikan tindakan-siswa',

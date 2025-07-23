@@ -37,7 +37,6 @@
                                         <label for="manufacturername">jurusan</label>
                                         <input id="nama_jurusan" name="nama_jurusan" type="text" class="form-control" placeholder="Masukkan Nama jurusan">
                                     </div>
-                                  
                                 </div>
 
                             </div>

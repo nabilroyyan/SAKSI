@@ -32,8 +32,10 @@
                             </a>
                             
                             <div class="d-flex align-items-center">
+                                @can('update periode')
                                 <button type="button" class="btn btn-warning me-2" id="openBulkPeriodeModal">
                                     <i class="bi bi-calendar-check"></i> Update Periode Terpilih</button>
+                                @endcan
                                 @can('naik kelas')           
                                 <button type="button" class="btn btn-primary me-2" id="openBulkPromoteModal">Naikkan Siswa Terpilih</button>
                                 <span id="selectedCount" class="badge bg-primary">0 dipilih</span>
@@ -125,53 +127,53 @@
                             <option value="tidak_naik">Tidak Naik Kelas</option>
                             <option value="lulus" @if($kelas->tingkat == 'XII') selected @endif>Lulus</option>
                         </select>
-                        <small class="form-text text-muted">
-                            @if($kelas->tingkat == 'X')
-                                Naik Kelas: Siswa akan dipindahkan ke kelas XI {{ $kelas->jurusan->nama_jurusan }}
-                            @elseif($kelas->tingkat == 'XI')
-                                Naik Kelas: Siswa akan dipindahkan ke kelas XII {{ $kelas->jurusan->nama_jurusan }}
-                            @else
-                                Lulus: Siswa telah menyelesaikan pendidikan
-                            @endif
-                        </small>
                     </div>
-                    @can('update periode')                       
+
+                    <!-- Kelas Tujuan (Muncul hanya jika status = naik) -->
+                   <div id="kelasTargetContainer" style="display: none;">
+                        <label for="bulk_id_kelas">Pilih Kelas Tujuan</label>
+                        <select id="bulk_id_kelas" name="id_kelas_tujuan" class="form-select">
+                            @foreach($kelas_tujuan as $k)
+                                <option value="{{ $k->id }}">{{ $k->tingkat }} - {{ $k->nama_kelas }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    
                     <div class="mb-3">
                         <label for="bulk_periode" class="form-label">Periode Aktif</label>
                         <select class="form-select" id="bulk_periode" name="periode_id" required>
                             @foreach($periodes as $periode)
-                            @if($periode->is_active == 'aktif')
-                            <option value="{{ $periode->id }}">
-                                {{ $periode->tahun }} {{ $periode->semester }}
-                            </option>
-                            @endif
+                                @if($periode->is_active == 'aktif')
+                                    <option value="{{ $periode->id }}">
+                                        {{ $periode->tahun }} {{ $periode->semester }}
+                                    </option>
+                                @endif
                             @endforeach
                         </select>
                         <small class="form-text text-muted">
                             Pilih periode aktif untuk data siswa yang baru dibuat
                         </small>
                     </div>
-                    @endcan
-                    
+
                     <div class="alert alert-info" id="kelasInfoContainer">
-                        @if($kelas->tingkat == 'X')
-                            Siswa akan naik ke kelas XI {{ $kelas->jurusan->nama_jurusan }}
-                        @elseif($kelas->tingkat == 'XI')
-                            Siswa akan naik ke kelas XII {{ $kelas->jurusan->nama_jurusan }}
-                        @else
-                            Siswa akan dinyatakan Lulus
-                        @endif
+                        <span id="infoText">
+                            @if($kelas->tingkat == 'X')
+                                Siswa akan naik ke kelas XI {{ $kelas->jurusan->nama_jurusan }}
+                            @elseif($kelas->tingkat == 'XI')
+                                Siswa akan naik ke kelas XII {{ $kelas->jurusan->nama_jurusan }}
+                            @else
+                                Siswa akan dinyatakan Lulus
+                            @endif
+                        </span>
                     </div>
-                    
+
                     <input type="hidden" name="siswa_ids" id="selectedSiswaIds">
                     <input type="hidden" name="kelas_siswa_ids" id="selectedKelasSiswaIds">
                     <input type="hidden" name="id_kelas" value="{{ $kelas->id }}">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">
-                        Proses Siswa Terpilih
-                    </button>
+                    <button type="submit" class="btn btn-primary">Proses Siswa Terpilih</button>
                 </div>
             </form>
         </div>
@@ -220,7 +222,6 @@
 
 @push('scripts')
 <script>
-
 document.addEventListener('DOMContentLoaded', function () {
     const selectAll = document.getElementById('select_all_ids');
     const checkboxes = document.querySelectorAll('.checkbox_ids');
@@ -230,18 +231,19 @@ document.addEventListener('DOMContentLoaded', function () {
     const selectedKelasSiswaInput = document.getElementById('selectedKelasSiswaIds');
     const bulkForm = document.getElementById('bulkPromoteForm');
     const statusSelect = document.getElementById('bulk_status');
-    const kelasTargetContainer = document.getElementById('kelasTargetContainer');
-    const kelasSelect = document.getElementById('bulk_id_kelas');
+    const kelasTargetContainer = document.getElementById('kelasTargetContainer'); // Ini container dropdown kelas tujuan
+    const kelasSelect = document.getElementById('bulk_id_kelas'); // Ini select-nya
     const openBulkPeriodeButton = document.getElementById('openBulkPeriodeModal');
     const periodeSiswaInput = document.getElementById('periodeSiswaIds');
-    const periodeKelasSiswaInput = document.getElementById('periodeKelasSiswaIds')
+    const periodeKelasSiswaInput = document.getElementById('periodeKelasSiswaIds');
     const kelasInfoContainer = document.getElementById('kelasInfoContainer');
     const kelasTingkat = '{{ $kelas->tingkat }}';
     const namaJurusan = '{{ $kelas->jurusan->nama_jurusan }}';
 
-     function updateStatusInfo() {
+    // Update info status
+    function updateStatusInfo() {
         const status = statusSelect.value;
-        
+
         if (status === 'naik') {
             if (kelasTingkat === 'X') {
                 kelasInfoContainer.innerHTML = `Siswa akan naik ke kelas XI ${namaJurusan}`;
@@ -255,19 +257,45 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Toggle dropdown kelas tujuan berdasarkan status
+    function toggleKelasTujuan() {
+        const status = statusSelect.value;
+
+        if (status === 'naik' && kelasTingkat !== 'XII') {
+            kelasTargetContainer.style.display = 'block';
+            if (kelasSelect) kelasSelect.required = true;
+        } else {
+            kelasTargetContainer.style.display = 'none';
+            if (kelasSelect) kelasSelect.required = false;
+        }
+
+        // Jika XII, paksa jadi lulus
+        if (kelasTingkat === 'XII' && status === 'naik') {
+            statusSelect.value = 'lulus';
+            updateStatusInfo();
+            kelasTargetContainer.style.display = 'none';
+        }
+    }
+
+    // Inisialisasi event
     if (statusSelect) {
-        statusSelect.addEventListener('change', updateStatusInfo);
-        // Trigger initial update
+        statusSelect.addEventListener('change', function () {
+            toggleKelasTujuan();
+            updateStatusInfo();
+        });
+
+        // Trigger awal
+        toggleKelasTujuan();
         updateStatusInfo();
     }
 
-    // Auto-disable naik kelas for XII
+    // Disable naik kelas jika XII
     if (kelasTingkat === 'XII') {
         const naikOption = statusSelect.querySelector('option[value="naik"]');
-        if (naikOption) {
-            naikOption.disabled = true;
-        }
+        if (naikOption) naikOption.disabled = true;
     }
+
+    // Modal periode
     openBulkPeriodeButton.addEventListener('click', function () {
         const selectedSiswaIds = [];
         const selectedKelasSiswaIds = [];
@@ -284,15 +312,14 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Set hidden input values
         periodeSiswaInput.value = selectedSiswaIds.join(',');
         periodeKelasSiswaInput.value = selectedKelasSiswaIds.join(',');
 
-        // Buka modal
         const modal = new bootstrap.Modal(document.getElementById('bulkPeriodeModal'));
         modal.show();
     });
 
+    // Counter
     function updateSelectedCount() {
         const checked = Array.from(checkboxes).filter(cb => cb.checked);
         selectedCountBadge.textContent = `${checked.length} dipilih`;
@@ -309,38 +336,15 @@ document.addEventListener('DOMContentLoaded', function () {
         cb.addEventListener('change', updateSelectedCount);
     });
 
-    // Toggle visibility and required attribute of kelas tujuan based on selected status
-    if (statusSelect) {
-        statusSelect.addEventListener('change', function() {
-            const kelasTingkat = '{{ $kelas->tingkat }}';
-            
-            if (this.value === 'naik' && kelasTingkat !== 'XII') {
-                kelasTargetContainer.style.display = 'block';
-                if (kelasSelect) kelasSelect.required = true;
-            } else {
-                kelasTargetContainer.style.display = 'none';
-                if (kelasSelect) kelasSelect.required = false;
-            }
-
-            // Auto-select lulus jika kelas XII
-            if (kelasTingkat === 'XII' && this.value === 'naik') {
-                this.value = 'lulus';
-            }
-        });
-
-        // Trigger change event on load
-        const changeEvent = new Event('change');
-        statusSelect.dispatchEvent(changeEvent);
-    }
-
+    // Buka modal naik kelas
     openBulkButton.addEventListener('click', function () {
         const selectedSiswaIds = [];
         const selectedKelasSiswaIds = [];
 
         checkboxes.forEach(cb => {
             if (cb.checked) {
-                selectedSiswaIds.push(cb.value); // This is the student ID (value attribute)
-                selectedKelasSiswaIds.push(cb.dataset.kelasSiswaId); // This is the kelas_siswa ID
+                selectedSiswaIds.push(cb.value);
+                selectedKelasSiswaIds.push(cb.dataset.kelasSiswaId);
             }
         });
 
@@ -349,19 +353,13 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Set hidden input values
         selectedSiswaInput.value = selectedSiswaIds.join(',');
         selectedKelasSiswaInput.value = selectedKelasSiswaIds.join(',');
 
-        // Set default status to 'naik' and trigger change to show kelas tujuan
-        if (statusSelect) {
-            statusSelect.value = 'naik';
-            // Manually trigger the change event
-            const changeEvent = new Event('change');
-            statusSelect.dispatchEvent(changeEvent);
-        }
+        statusSelect.value = 'naik';
+        const changeEvent = new Event('change');
+        statusSelect.dispatchEvent(changeEvent);
 
-        // Buka modal
         const modal = new bootstrap.Modal(document.getElementById('bulkNaikKelasModal'));
         modal.show();
     });

@@ -43,7 +43,7 @@
                                     
                                     const data = await response.json();
                                     
-                                    this.kelasNama = data?.kelas?.kode_kelas ?? '—';
+                                    this.kelasNama = data?.kelas?.nama_kelas ?? '—';
                                     this.tingkat = data?.kelas?.tingkat ?? '—';
                                     this.jurusan = data?.kelas?.jurusan?.nama_jurusan ?? '—';
                                 } catch (error) {
@@ -82,18 +82,19 @@
                             <!-- Info Kelas -->
                             <div class="form-group m-2">
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col">
                                         <label for="tingkat_info">Tingkat</label>
                                         <input type="text" class="form-control" id="tingkat_info" name="tingkat_info"
                                             x-model="tingkat" readonly>
                                     </div>
-                                    <div class="col-md-6">
-                                        <label for="jurusan_info">Jurusan</label>
-                                        <input type="text" class="form-control" id="jurusan_info" name="jurusan_info"
-                                            x-model="jurusan" readonly>
+                                    <div class="col">
+                                        <label for="kelas_info">Nama Kelas</label>
+                                        <input type="text" class="form-control" id="kelas_info" name="kelas_info"
+                                            x-model="kelasNama" readonly>
                                     </div>
                                 </div>
                             </div>
+
 
                             <div class="form-group">
                                 <label for="tanggal">Tanggal Pelanggaran</label>

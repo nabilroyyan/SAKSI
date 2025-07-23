@@ -164,7 +164,7 @@
                         <div class="form-text mt-1">Hanya file .xlsx, .xls, atau .csv yang diizinkan.</div>
                         {{-- Contoh link template jika ada --}}
                         <div class="mt-2">
-                            <a href="{{ asset('templates/template_siswa.xlsx') }}" download class="btn btn-link btn-sm p-0">
+                            <a href="{{ asset('templates/Template_siswa.xlsx') }}" download class="btn btn-link btn-sm p-0">
                                 <i class="fas fa-download me-1"></i> Unduh Template Excel
                             </a>
                         </div>

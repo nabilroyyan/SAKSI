@@ -206,8 +206,8 @@
                                             <th style="width: 5%;">No</th>
                                             <th>NIS</th>
                                             <th>Nama Siswa</th>
-                                            <th>Kelas</th>
                                             <th>Tingkat</th>
+                                            <th>Kelas</th>
                                             <th>Jumlah Pelanggaran</th>
                                             <th>Total Skor</th>
                                             <th>Status</th>
@@ -225,20 +225,21 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td>
-                                                @if(isset($data['kelas_siswa']) && $data['kelas_siswa']->is_active == 'aktif')
-                                                    {{ $data['kelas_siswa']->kelas->jurusan->nama_jurusan ?? '' }}
-                                                @else
-                                                    N/A
-                                                @endif
-                                            </td>
-                                            <td>
+                                             <td>
                                                 @if(isset($data['kelas_siswa']) && $data['kelas_siswa']->is_active == 'aktif')
                                                     <span class="badge bg-secondary">{{ $data['kelas_siswa']->kelas->tingkat ?? 'N/A' }}</span>
                                                 @else
                                                     N/A
                                                 @endif
                                             </td>
+                                            <td>
+                                                @if(isset($data['kelas_siswa']) && $data['kelas_siswa']->is_active == 'aktif')
+                                                    {{ $data['kelas_siswa']->kelas->nama_kelas ?? '' }}
+                                                @else
+                                                    N/A
+                                                @endif
+                                            </td>
+                                           
                                             <td class="text-center align-middle">
                                                 <span class="badge bg-info fs-6">{{ $data['jumlah_pelanggaran'] }}</span>
                                             </td>

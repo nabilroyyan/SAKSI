@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->enum('tingkat', ['X', 'XI', 'XII']);
             $table->foreignId('id_jurusan')->constrained('jurusan')->onDelete('cascade');
+            $table->string('nama_kelas');
             $table->foreignId('id_users')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('id_wakel')->nullable()->constrained('users')->onDelete('set null');
             $table->enum('stt', ['tidak_aktif', 'aktif']); // wali kelas
             $table->timestamps();
         });        

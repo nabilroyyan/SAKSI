@@ -9,6 +9,6 @@ class PrestasiFoto extends Model
 
     public function prestasi()
     {
-        return $this->belongsTo(Prestasi::class);
+        return $this->belongsTo(Prestasi::class, 'prestasi_id');
     }
 }

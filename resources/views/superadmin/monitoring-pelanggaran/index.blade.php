@@ -23,19 +23,40 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Filter Data</h4>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="card-title mb-0">Filter Data</h4>
+                            @if(!$siswaPelanggar->isEmpty())
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-success" id="exportPdfBtn">
+                                        <i class="fas fa-file-pdf"></i> Export PDF
+                                    </button>
+                                </div>
+                            @endif
+                        </div>
+                        
                         <form action="{{ route('monitoring-Pelanggaran.index') }}" method="GET" id="filterForm">
                            <div class="row">
                                 <div class="col-md-3">
-                                    <label>Nama Siswa</label>
+                                    <label class="form-label">Nama Siswa</label>
                                     <input type="text" name="nama_siswa" class="form-control" placeholder="Cari nama siswa..." value="{{ request('nama_siswa') }}">
                                 </div>
                                 <div class="col-md-3">
-                                    <label>Nama Jurusan</label>
+                                    <label class="form-label">Nama Jurusan</label>
                                     <input type="text" name="jurusan" class="form-control" placeholder="Cari nama Jurusan..." value="{{ request('jurusan') }}">
                                 </div>
                                 <div class="col-md-3">
-                                    <label>Nama Pelanggaran</label>
+                                    <label class="form-label">Tingkat Kelas</label>
+                                    <select name="tingkat" class="form-select">
+                                        <option value="">Pilih Tingkat</option>
+                                        @foreach($tingkatList as $tingkat)
+                                            <option value="{{ $tingkat }}" {{ request('tingkat') == $tingkat ? 'selected' : '' }}>
+                                                Tingkat {{ $tingkat }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Nama Pelanggaran</label>
                                     <input type="text" name="nama_pelanggaran" class="form-control" placeholder="Cari nama pelanggaran..." value="{{ request('nama_pelanggaran') }}">
                                 </div>
                             </div>
@@ -72,9 +93,25 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Periode</label>
+                                    <select name="periode_id" class="form-select">
+                                        @foreach($periodes as $periode)
+                                            <option value="{{ $periode->id }}"
+                                                {{ $selectedPeriodeId == $periode->id ? 'selected' : '' }}>
+                                                {{ $periode->tahun }} - {{ ucfirst($periode->semester) }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
                                 <div class="col-md-3 d-flex align-items-end">
-                                    <button type="submit" class="btn btn-primary me-2">Filter</button>
-                                    <a href="{{ route('monitoring-Pelanggaran.index') }}" class="btn btn-secondary">Reset</a>
+                                    <button type="submit" class="btn btn-primary me-2">
+                                        <i class="fas fa-filter"></i> Filter
+                                    </button>
+                                    <a href="{{ route('monitoring-Pelanggaran.index') }}" class="btn btn-secondary">
+                                        <i class="fas fa-refresh"></i> Reset
+                                    </a>
                                 </div>
                             </div>
                         </form>
@@ -82,6 +119,72 @@
                 </div>
             </div>
         </div>
+
+        <!-- Statistics Cards -->
+        @if(!$siswaPelanggar->isEmpty())
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h5 class="card-title">Total Siswa</h5>
+                                <h3>{{ $siswaPelanggar->count() }}</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-users fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h5 class="card-title">Total Pelanggaran</h5>
+                                <h3>{{ $pelanggaran->count() }}</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-exclamation-triangle fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h5 class="card-title">Status Peringatan</h5>
+                                <h3>{{ $siswaPelanggar->filter(fn($s) => $s['total_skor'] >= 500 && $s['total_skor'] < 1000)->count() }}</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-exclamation fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-danger text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h5 class="card-title">Status Kritis</h5>
+                                <h3>{{ $siswaPeringatan->count() }}</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-ban fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
 
         <!-- Data Siswa Section -->
         <div class="row">
@@ -91,16 +194,20 @@
                         <h4 class="card-title">Data Siswa Pelanggar</h4>
                         
                         @if($siswaPelanggar->isEmpty())
-                            <div class="alert alert-info">Tidak ada data pelanggaran yang ditemukan.</div>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> 
+                                Tidak ada data pelanggaran yang ditemukan dengan filter yang dipilih.
+                            </div>
                         @else
                             <div class="table-responsive">
                                 <table id="datatable" class="table table-bordered dt-responsive nowrap w-100">
-                                    <thead>
+                                    <thead class="table-dark">
                                         <tr>
                                             <th style="width: 5%;">No</th>
                                             <th>NIS</th>
                                             <th>Nama Siswa</th>
                                             <th>Kelas</th>
+                                            <th>Tingkat</th>
                                             <th>Jumlah Pelanggaran</th>
                                             <th>Total Skor</th>
                                             <th>Status</th>
@@ -112,40 +219,60 @@
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $data['siswa']->nis_nip ?? 'N/A' }}</td>
-                                            <td>{{ $data['siswa']->nama_siswa ?? 'N/A' }}</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                        <h6 class="mb-0">{{ $data['siswa']->nama_siswa ?? 'N/A' }}</h6>
+                                                    </div>
+                                                </div>
+                                            </td>
                                             <td>
                                                 @if(isset($data['kelas_siswa']) && $data['kelas_siswa']->is_active == 'aktif')
-                                                    {{ $data['kelas_siswa']->kelas->tingkat ?? '' }}
                                                     {{ $data['kelas_siswa']->kelas->jurusan->nama_jurusan ?? '' }}
                                                 @else
                                                     N/A
                                                 @endif
                                             </td>
-                                            <td class="text-center align-middle">
-                                                <span class="badge bg-info">{{ $data['jumlah_pelanggaran'] }}</span>
+                                            <td>
+                                                @if(isset($data['kelas_siswa']) && $data['kelas_siswa']->is_active == 'aktif')
+                                                    <span class="badge bg-secondary">{{ $data['kelas_siswa']->kelas->tingkat ?? 'N/A' }}</span>
+                                                @else
+                                                    N/A
+                                                @endif
                                             </td>
                                             <td class="text-center align-middle">
-                                                <span class="badge {{ $data['total_skor'] >= 1000 ? 'bg-danger' : ($data['total_skor'] >= 500 ? 'bg-warning' : 'bg-success') }}">
+                                                <span class="badge bg-info fs-6">{{ $data['jumlah_pelanggaran'] }}</span>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <span class="badge fs-6 {{ $data['total_skor'] >= 1000 ? 'bg-danger' : ($data['total_skor'] >= 500 ? 'bg-warning' : 'bg-success') }}">
                                                     {{ $data['total_skor'] }}
                                                 </span>
                                             </td>
                                             <td class="text-center align-middle">
                                                 @if($data['total_skor'] >= 1000)
-                                                    <span class="badge bg-danger">Kritis</span>
+                                                    <span class="badge bg-danger">
+                                                        <i class="fas fa-ban"></i> Kritis
+                                                    </span>
                                                 @elseif($data['total_skor'] >= 500)
-                                                    <span class="badge bg-warning">Peringatan</span>
+                                                    <span class="badge bg-warning">
+                                                        <i class="fas fa-exclamation"></i> Peringatan
+                                                    </span>
                                                 @else
-                                                    <span class="badge bg-success">Normal</span>
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-check"></i> Normal
+                                                    </span>
                                                 @endif
                                             </td>
                                             <td>
-                                            @can('detail pelanggaran')         
-                                                <button type="button" class="btn btn-sm btn-primary btn-detail"
-                                                data-id="{{ $data['siswa']->id }}"
-                                                data-name="{{ $data['siswa']->nama_siswa }}">
-                                                <i class="fas fa-eye"></i> Detail
-                                            </button>
-                                            @endcan
+                                                <div class="btn-group" role="group">
+                                                    @can('detail monitoring-pelanggaran')         
+                                                        <button type="button" class="btn btn-sm btn-primary btn-detail"
+                                                        data-id="{{ $data['siswa']->id }}"
+                                                        data-name="{{ $data['siswa']->nama_siswa }}"
+                                                        title="Lihat Detail">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    @endcan
+                                                </div>
                                             </td>
                                         </tr>
                                         @endforeach
@@ -164,22 +291,25 @@
 <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="detailModalLabel">Detail Pelanggaran - <span id="namaSiswaModal"></span></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="detailModalLabel">
+                    <i class="fas fa-list-alt"></i> Detail Pelanggaran - <span id="namaSiswaModal"></span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div id="loadingDetail" class="text-center">
-                    <div class="spinner-border" role="status">
+                <div id="loadingDetail" class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
+                    <p class="mt-2">Memuat data...</p>
                 </div>
                 <div id="detailContent" style="display: none;">
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped">
                             <thead class="table-dark">
                                 <tr>
-                                    <th>No</th>
+                                    <th style="width: 5%;">No</th>
                                     <th>Tanggal</th>
                                     <th>Pelanggaran</th>
                                     <th>Skor</th>
@@ -192,21 +322,23 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="mt-3">
+                    <div class="mt-4">
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="card bg-info text-white">
-                                    <div class="card-body">
+                                <div class="card bg-gradient-info text-white">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
                                         <h5>Total Pelanggaran</h5>
-                                        <h3 id="totalPelanggaran">0</h3>
+                                        <h2 id="totalPelanggaran">0</h2>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="card bg-danger text-white">
-                                    <div class="card-body">
+                                <div class="card bg-gradient-danger text-white">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-calculator fa-2x mb-2"></i>
                                         <h5>Total Skor</h5>
-                                        <h3 id="totalSkorModal">0</h3>
+                                        <h2 id="totalSkorModal">0</h2>
                                     </div>
                                 </div>
                             </div>
@@ -215,72 +347,138 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Tutup
+                </button>
+                <button type="button" class="btn btn-success" id="btnExportDetailFromModal">
+                    <i class="fas fa-file-pdf"></i> Export PDF
+                </button>
             </div>
         </div>
     </div>
 </div>
-
-
-
 @endsection
 
-@section('scripts')
-<!-- Pastikan Bootstrap JS sudah di-include sebelum script ini -->
-
+@push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Handler untuk tombol detail
-    document.addEventListener('click', function(e) {
-        const button = e.target.closest('.btn-detail');
-        if (button) {
-            const siswaId = button.getAttribute('data-id');
-            const namaSiswa = button.getAttribute('data-name');
-            document.getElementById('namaSiswaModal').textContent = namaSiswa;
+$(document).ready(function() {
+    $('.btn-detail').on('click', function () {
+        const siswaId = $(this).data('id');
+        const nama = $(this).data('name');
 
-            // Modal Bootstrap 5
-            const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
-            detailModal.show();
+        $('#namaSiswaModal').text(nama);
+        $('#loadingDetail').show();
+        $('#detailContent').hide();
+        $('#detailTableBody').html('');
+        $('#totalPelanggaran').text('0');
+        $('#totalSkorModal').text('0');
 
-            document.getElementById('loadingDetail').style.display = 'block';
-            document.getElementById('detailContent').style.display = 'none';
+        $('#detailModal').modal('show');
 
-            fetch(`/monitoring-pelanggaran/detail/${siswaId}`)
-                .then(response => response.json())
-                .then(data => {
-                    const tableBody = document.getElementById('detailTableBody');
-                    tableBody.innerHTML = '';
+        $.ajax({
+            url: `/monitoring-pelanggaran/detail/${siswaId}`,
+            type: 'GET',
+            success: function(response) {
+                $('#loadingDetail').hide();
+                $('#detailContent').show();
 
-                    if (Array.isArray(data.pelanggarans)) {
-                        data.pelanggarans.forEach((item, index) => {
-                            const row = `<tr>
-                                <td>${index + 1}</td>
-                                <td>${item.tanggal}</td>
-                                <td>${item.nama_pelanggaran}</td>
-                                <td>${item.skor}</td>
-                                <td>${item.petugas}</td>
-                                <td>${item.bukti ? `<a href="${item.bukti}" target="_blank">Lihat</a>` : '-'}</td>
-                            </tr>`;
-                            tableBody.innerHTML += row;
-                        });
-                    } else {
-                        tableBody.innerHTML = '<tr><td colspan="6" class="text-center">Tidak ada data pelanggaran</td></tr>';
-                    }
-
-                    document.getElementById('totalPelanggaran').textContent = data.total_pelanggaran ?? 0;
-                    document.getElementById('totalSkorModal').textContent = data.total_skor ?? 0;
-
-                    document.getElementById('loadingDetail').style.display = 'none';
-                    document.getElementById('detailContent').style.display = 'block';
-                })
-                .catch(error => {
-                    console.error('Gagal ambil data detail:', error);
-                    alert('Gagal mengambil data detail. Coba lagi.');
-                    document.getElementById('loadingDetail').style.display = 'none';
+                let rows = '';
+                response.pelanggarans.forEach((p, i) => {
+                    rows += `
+                        <tr>
+                            <td>${i + 1}</td>
+                            <td>${p.tanggal}</td>
+                            <td>${p.nama_pelanggaran}</td>
+                            <td>${p.skor}</td>
+                            <td>${p.petugas}</td>
+                            <td>${p.bukti ? `<a href="${p.bukti}" target="_blank">Lihat</a>` : '-'}</td>
+                        </tr>
+                    `;
                 });
-        }
+
+                $('#detailTableBody').html(rows);
+                $('#totalPelanggaran').text(response.total_pelanggaran);
+                $('#totalSkorModal').text(response.total_skor);
+
+                $('#btnExportDetailFromModal').off().on('click', function () {
+                    window.open(`/monitoring-pelanggaran/pdf-detail/${siswaId}`, '_blank');
+                });
+            },
+            error: function(xhr) {
+                $('#loadingDetail').hide();
+                $('#detailModal').modal('hide');
+                Swal.fire('Gagal', 'Tidak bisa memuat detail pelanggaran', 'error');
+            }
+        });
+    });
+
+    $('#exportPdfBtn').on('click', function () {
+        const params = $('#filterForm').serialize();
+        window.open(`/monitoring-pelanggaran/pdf?${params}`, '_blank');
     });
 });
 </script>
-@endsection
+@endpush
 
+
+@section('styles')
+<style>
+.avatar-sm {
+    height: 2rem;
+    width: 2rem;
+}
+
+.avatar-title {
+    align-items: center;
+    background-color: #556ee6;
+    color: #fff;
+    display: flex;
+    font-weight: 500;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+}
+
+.bg-gradient-info {
+    background: linear-gradient(45deg, #17a2b8, #20c997) !important;
+}
+
+.bg-gradient-danger {
+    background: linear-gradient(45deg, #dc3545, #fd7e14) !important;
+}
+
+.card-body .fa-2x {
+    opacity: 0.8;
+}
+
+.table th {
+    font-weight: 600;
+    border-color: #dee2e6;
+}
+
+.badge {
+    font-weight: 500;
+}
+
+.btn-group .btn {
+    margin-right: 2px;
+}
+
+.btn-group .btn:last-child {
+    margin-right: 0;
+}
+
+@media (max-width: 768px) {
+    .btn-group {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .btn-group .btn {
+        margin-right: 0;
+        width: 100%;
+    }
+}
+</style>
+@endsection

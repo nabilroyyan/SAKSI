@@ -131,12 +131,6 @@ public function getDetail($id)
     ]);
 }
 
-    public function exportExcel(Request $request)
-    {
-        $filename = 'monitoring-absensi-' . Carbon::now()->format('Y-m-d-H-i-s') . '.xlsx';
-        
-        return Excel::download(new MonitoringAbsensiExport($request), $filename);
-    }
 
     public function getStatistik(Request $request)
     {
@@ -243,49 +237,5 @@ public function getDetail($id)
         ]);
     }
 
-    public function downloadLaporan(Request $request)
-    {
-        $query = Absensi::with([
-            'siswa',
-            'kelasSiswa.kelas.jurusan',
-            'petugas'
-        ])->whereHas('kelasSiswa', function ($q) {
-            $q->where('is_active', 'aktif');
-        });
-
-        // Apply all filters
-        if ($request->filled('nama_siswa')) {
-            $query->whereHas('siswa', function ($q) use ($request) {
-                $q->where('nama_siswa', 'like', '%' . $request->nama_siswa . '%');
-            });
-        }
-
-        if ($request->filled('jurusan')) {
-            $query->whereHas('kelasSiswa.kelas.jurusan', function ($q) use ($request) {
-                $q->where('nama_jurusan', 'like', '%' . $request->jurusan . '%');
-            });
-        }
-
-        if ($request->filled('tanggal')) {
-            $query->whereDate('hari_tanggal', $request->tanggal);
-        }
-
-        if ($request->filled('bulan')) {
-            $query->whereMonth('hari_tanggal', $request->bulan);
-        }
-
-        if ($request->filled('tahun')) {
-            $query->whereYear('hari_tanggal', $request->tahun);
-        }
-
-        $absensiList = $query->orderBy('hari_tanggal', 'desc')->get();
-
-        $pdf = app('dompdf.wrapper');
-        $pdf->loadView('superadmin.monitoring-absensi.laporan-pdf', compact('absensiList', 'request'));
-        
-        $filename = 'laporan-monitoring-absensi-' . Carbon::now()->format('Y-m-d') . '.pdf';
-        
-        return $pdf->download($filename);
-    }
 
 }

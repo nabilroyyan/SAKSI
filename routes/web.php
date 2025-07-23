@@ -96,8 +96,10 @@ use App\Http\Controllers\MonitoringPelanggaranController;
         });
 
         Route::prefix('monitoring-pelanggaran')->group(function () {
-            Route::get('/', [MonitoringPelanggaranController::class, 'index'])->name('monitoring-Pelanggaran.index')->middleware('permission:view monitoring-pelanggaran');
-            Route::get('/detail/{id}', [MonitoringPelanggaranController::class, 'getDetail'])->name('monitoring-Pelanggaran.detail')->middleware('permission:detail pelanggaran');
+            Route::get('/', [MonitoringPelanggaranController::class, 'index'])->name('monitoring-Pelanggaran.index');
+            Route::get('/detail/{id}', [MonitoringPelanggaranController::class, 'getDetail']);
+            Route::get('/pdf-detail/{id}', [MonitoringPelanggaranController::class, 'exportDetailPdf']);
+            Route::get('/pdf', [MonitoringPelanggaranController::class, 'exportPdf'])->name('pdf');
         });
 
         Route::prefix('kategori-tindakan')->group(function () {

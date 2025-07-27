@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
@@ -124,21 +125,37 @@ class UserController extends Controller
     }
 
 
-    public function destroy($id)
+   public function destroy($id)
     {
-        $user = User::find($id);
-        
-        if (!$user) {
-            // User tidak ditemukan, redirect dengan pesan error
-            return redirect()->route('users.index')->with('error', 'User tidak ditemukan.');
-        }
-        
-        $delete = $user->delete();
-        
-        if ($delete) {
-            return redirect()->route('users.index')->with('success', 'User berhasil dihapus.');
-        } else {
-            return redirect()->route('users.index')->with('error', 'Gagal menghapus user.');
+        // Memulai transaksi database untuk memastikan operasi berhasil.
+        DB::beginTransaction();
+
+        try {
+            // 1. Cari user berdasarkan ID.
+            $user = User::find($id);
+
+            // 2. Jika user tidak ditemukan, batalkan transaksi dan redirect dengan error.
+            if (!$user) {
+                DB::rollBack();
+                return redirect()->route('users.index')->with('error', 'User tidak ditemukan.');
+            }
+
+            // 3. Hapus data user secara permanen menggunakan forceDelete().
+            $user->forceDelete();
+
+            // 4. Jika proses berhasil, konfirmasi transaksi.
+            DB::commit();
+
+            return redirect()->route('users.index')->with('success', 'User berhasil dihapus secara permanen.');
+
+        } catch (\Exception $e) {
+            // 5. Jika terjadi error di tengah proses, batalkan semua perubahan.
+            DB::rollBack();
+
+            // Catat error (opsional, tapi sangat disarankan untuk debugging)
+            // \Log::error('Gagal menghapus user: ' . $e->getMessage());
+
+            return redirect()->route('users.index')->with('error', 'Gagal menghapus user karena terjadi kesalahan pada server.');
         }
     }
 }

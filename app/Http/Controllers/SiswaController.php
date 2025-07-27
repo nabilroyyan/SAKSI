@@ -122,17 +122,7 @@ class SiswaController extends Controller
         // 4. Kembalikan ke halaman index dengan pesan sukses.
         return redirect()->route('siswa.index')->with('success', 'Data siswa berhasil dihapus secara permanen');
     }
-    // public function destroy($id)
-    // {
-    //     $siswa = Siswa::find($id);
-    //     if (!$siswa) {
-    //         return redirect()->route('siswa.index')->with('error', 'Data kelas tidak ditemukan');
-    //     }
 
-    //     $siswa->delete();
-
-    //     return redirect()->route('siswa.index')->with('success', 'Data kelas berhasil dihapus');
-    // }
 
     public function showKelasSiswa(Request $request)
     {

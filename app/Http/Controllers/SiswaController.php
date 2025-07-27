@@ -107,15 +107,32 @@ class SiswaController extends Controller
     // Hapus siswa
     public function destroy($id)
     {
+        // 1. Cari siswa berdasarkan ID.
         $siswa = Siswa::find($id);
+
+        // 2. Jika siswa tidak ditemukan, kembalikan ke halaman index dengan pesan error.
         if (!$siswa) {
-            return redirect()->route('siswa.index')->with('error', 'Data kelas tidak ditemukan');
+            return redirect()->route('siswa.index')->with('error', 'Data siswa tidak ditemukan');
         }
 
-        $siswa->delete();
+        // 3. Gunakan forceDelete() untuk menghapus data secara permanen.
+        // Metode ini akan mengabaikan fitur Soft Deletes.
+        $siswa->forceDelete();
 
-        return redirect()->route('siswa.index')->with('success', 'Data kelas berhasil dihapus');
+        // 4. Kembalikan ke halaman index dengan pesan sukses.
+        return redirect()->route('siswa.index')->with('success', 'Data siswa berhasil dihapus secara permanen');
     }
+    // public function destroy($id)
+    // {
+    //     $siswa = Siswa::find($id);
+    //     if (!$siswa) {
+    //         return redirect()->route('siswa.index')->with('error', 'Data kelas tidak ditemukan');
+    //     }
+
+    //     $siswa->delete();
+
+    //     return redirect()->route('siswa.index')->with('success', 'Data kelas berhasil dihapus');
+    // }
 
     public function showKelasSiswa(Request $request)
     {

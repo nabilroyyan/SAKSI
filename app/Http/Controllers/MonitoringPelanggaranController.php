@@ -316,8 +316,8 @@ public function getDetail($id)
 public function exportDetailPdf($id)
 {
     try {
-        Log::info("Exporting detail PDF for siswa ID: " . $id); // Debug log
-        
+        Log::info("Exporting detail PDF for siswa ID: " . $id);
+
         $siswa = Siswa::with([
             'pelanggarans' => function($q) {
                 $q->with(['skor_pelanggaran', 'petugas'])
@@ -332,11 +332,23 @@ public function exportDetailPdf($id)
             }
         ])->findOrFail($id);
 
-        Log::info("Found siswa for PDF: " . $siswa->nama_siswa); // Debug log
+        Log::info("Found siswa for PDF: " . $siswa->nama_siswa);
 
         $totalSkor = $siswa->pelanggarans->sum(function($p) {
             return $p->skor_pelanggaran->skor ?? 0;
         });
+
+        // Proses base64 image
+        foreach ($siswa->pelanggarans as $pelanggaran) {
+            $path = storage_path('app/public/bukti_pelanggaran/' . $pelanggaran->bukti_pelanggaran);
+            if (file_exists($path)) {
+                $type = pathinfo($path, PATHINFO_EXTENSION);
+                $data = file_get_contents($path);
+                $pelanggaran->base64_image = 'data:image/' . $type . ';base64,' . base64_encode($data);
+            } else {
+                $pelanggaran->base64_image = null;
+            }
+        }
 
         $data = [
             'siswa' => $siswa,
@@ -346,26 +358,15 @@ public function exportDetailPdf($id)
             'tanggal_cetak' => Carbon::now()->format('d/m/Y H:i:s'),
         ];
 
-        // Pastikan view PDF ada
-        $viewPath = 'superadmin.monitoring-pelanggaran.detail-pdf';
-        if (!view()->exists($viewPath)) {
-            Log::error("View not found: " . $viewPath);
-            return redirect()->back()->with('error', 'Template PDF tidak ditemukan');
-        }
-
-        $pdf = PDF::loadView($viewPath, $data);
+        $pdf = PDF::loadView('superadmin.monitoring-pelanggaran.detail-pdf', $data);
         $pdf->setPaper('A4', 'portrait');
 
         $filename = 'detail-pelanggaran-' . str_replace(' ', '-', $siswa->nama_siswa) . '-' . Carbon::now()->format('Y-m-d') . '.pdf';
-        
-        Log::info("PDF filename: " . $filename); // Debug log
-        
+
         return $pdf->download($filename);
 
     } catch (\Exception $e) {
         Log::error('Error exporting detail PDF: ' . $e->getMessage());
-        Log::error('Stack trace: ' . $e->getTraceAsString()); // Debug log
-        
         return redirect()->back()->with('error', 'Gagal mengekspor PDF detail: ' . $e->getMessage());
     }
 }

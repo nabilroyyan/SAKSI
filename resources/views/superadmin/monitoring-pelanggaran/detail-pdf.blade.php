@@ -267,6 +267,8 @@
                 <th style="width: 8%;">Skor</th>
                 <th style="width: 20%;">Petugas</th>
                 <th style="width: 20%;">Keterangan</th>
+                <th style="width: 20%;">Foto</th>
+
             </tr>
         </thead>
         <tbody>
@@ -285,6 +287,13 @@
                 </td>
                 <td>{{ $pelanggaran->petugas->name ?? 'N/A' }}</td>
                 <td>{{ $pelanggaran->keterangan ?? '-' }}</td>
+                <td>
+                    @if ($pelanggaran->bukti_pelanggaran)
+                        <img src="{{ public_path('storage/' . $pelanggaran->bukti_pelanggaran) }}" style="width: 100px;">
+                    @else
+                        -
+                    @endif
+                </td>
             </tr>
             @empty
             <tr>

@@ -126,14 +126,12 @@ class SiswaController extends Controller
 
     public function showKelasSiswa(Request $request)
     {
-        // Set tingkat default ke 'X'
-        $tingkat = $request->get('tingkat', 'X');
-
         $kelas = Kelas::with(['jurusan', 'kelasSiswa' => function ($q) {
             $q->where('is_active', 'aktif');
-        }])
-            ->where('tingkat', $tingkat)
-            ->get();
+        }])->get();
+
+        // Ambil semua tingkat unik dari data kelas
+        $tingkat = Kelas::select('tingkat')->distinct()->pluck('tingkat');
 
         return view('superadmin.siswa.kelassiswa', compact('kelas', 'tingkat'));
     }

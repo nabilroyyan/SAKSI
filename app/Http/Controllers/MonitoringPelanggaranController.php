@@ -102,9 +102,9 @@ class MonitoringPelanggaranController extends Controller
         }
 
         // Filter berdasarkan jurusan
-        if ($request->filled('jurusan')) {
-            $query->whereHas('kelasSiswa.kelas.jurusan', function ($q) use ($request) {
-                $q->where('nama_jurusan', 'like', '%' . $request->jurusan . '%');
+        if ($request->filled('nama_kelas')) {
+            $query->whereHas('kelasSiswa.kelas', function ($q) use ($request) {
+                $q->where('nama_kelas', 'like', '%' . $request->nama_kelas . '%');
             });
         }
 
@@ -217,8 +217,8 @@ class MonitoringPelanggaranController extends Controller
             $filters[] = 'Nama Siswa: ' . $request->nama_siswa;
         }
         
-        if ($request->filled('jurusan')) {
-            $filters[] = 'Jurusan: ' . $request->jurusan;
+        if ($request->filled('nama_kelas')) {
+            $filters[] = 'nama_kelas: ' . $request->nama_kelas;
         }
         
         if ($request->filled('tingkat')) {

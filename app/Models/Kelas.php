@@ -20,6 +20,11 @@ class Kelas extends Model
         'stt'
     ];
 
+    public function sekretaris()
+    {
+        return $this->belongsTo(User::class, 'id_users');
+    }
+
     public function jurusan()
     {
         return $this->belongsTo(Jurusan::class, 'id_jurusan');

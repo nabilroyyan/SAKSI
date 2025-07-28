@@ -46,6 +46,16 @@
                                             @enderror
                                         </div>
                                     </div>
+
+                                    <div class="col-sm-6">
+                                        <div class="mb-3">
+                                            <label for="nama_kelas" class="form-label">Nama Kelas</label>
+                                            <input type="text" id="nama_kelas" name="nama_kelas" class="form-control" value="{{ old('nama_kelas', $kelas->nama_kelas) }}" required>
+                                            @error('nama_kelas')
+                                                <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
         
                                     <div class="col-sm-6">
                                         <div class="mb-3">

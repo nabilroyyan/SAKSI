@@ -41,8 +41,8 @@
                                     <input type="text" name="nama_siswa" class="form-control" placeholder="Cari nama siswa..." value="{{ request('nama_siswa') }}">
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label">Nama Jurusan</label>
-                                    <input type="text" name="jurusan" class="form-control" placeholder="Cari nama Jurusan..." value="{{ request('jurusan') }}">
+                                    <label class="form-label">Nama Kelas</label>
+                                    <input type="text" name="nama_kelas" class="form-control" placeholder="Cari nama kelas..." value="{{ request('nama_kelas') }}">
                                 </div>
                                 <div class="col-md-3">
                                     <label class="form-label">Tingkat Kelas</label>

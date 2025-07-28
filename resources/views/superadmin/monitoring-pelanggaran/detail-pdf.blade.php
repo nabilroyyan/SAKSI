@@ -214,7 +214,7 @@
                 <td class="label">Kelas:</td>
                 <td>
                     @if($siswa->kelasSiswa && $siswa->kelasSiswa->is_active == 'aktif')
-                        {{ $siswa->kelasSiswa->kelas->jurusan->nama_jurusan ?? 'N/A' }}
+                        {{ $siswa->kelasSiswa->kelas->nama_kelas ?? 'N/A' }}
                     @else
                         N/A
                     @endif

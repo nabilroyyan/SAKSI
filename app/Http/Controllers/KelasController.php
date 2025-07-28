@@ -100,7 +100,6 @@ class KelasController extends Controller
             'id_users' => $request->id_users,
             'stt' => $request->stt,
             'nama_kelas' => $request->nama_kelas,
-            'id_wakel' => $request->id_wakel,
         ]);
 
         return redirect()->route('kelas.index')->with('success', 'Data kelas berhasil diperbarui.');
@@ -113,15 +112,15 @@ class KelasController extends Controller
             'kelas_siswa_ids' => 'required',
             'status' => 'required|in:naik,tidak_naik,lulus',
             'periode_id' => 'required|exists:periode,id',
-            'id_kelas_tujuan' => 'required_if:status,naik|exists:kelas,id' // hanya wajib jika status naik
+            'id_kelas_tujuan' => 'required_if:status,naik|exists:kelas,id'
         ]);
 
         $siswaIds = explode(',', $request->siswa_ids);
         $kelasSiswaIds = explode(',', $request->kelas_siswa_ids);
         $status = $request->status;
 
-        $periode = Periode::findOrFail($request->periode_id);
-        if ($periode->is_active !== 'aktif') {
+        $periodeBaru = Periode::findOrFail($request->periode_id);
+        if ($periodeBaru->is_active !== 'aktif') {
             return redirect()->back()->with('error', 'Periode yang dipilih tidak aktif.');
         }
 
@@ -132,6 +131,11 @@ class KelasController extends Controller
 
                 $kelasSiswa = KelasSiswa::findOrFail($kelasSiswaIds[$index]);
                 $kelas = Kelas::findOrFail($kelasSiswa->id_kelas);
+
+                // Cek apakah periode lama sama dengan yang dipilih sekarang
+                if ($kelasSiswa->periode_id == $periodeBaru->id) {
+                    throw new \Exception("Tidak dapat memproses. Periode baru tidak boleh sama dengan periode sebelumnya untuk siswa.");
+                }
 
                 // Nonaktifkan entri lama
                 $kelasSiswa->update([
@@ -163,7 +167,7 @@ class KelasController extends Controller
                         'id_kelas' => $kelasBaru->id,
                         'status' => 'naik',
                         'is_active' => 'aktif',
-                        'periode_id' => $periode->id
+                        'periode_id' => $periodeBaru->id
                     ]);
 
                 } elseif ($status === 'tidak_naik') {
@@ -173,14 +177,15 @@ class KelasController extends Controller
                         'id_kelas' => $kelas->id,
                         'status' => 'tidak_naik',
                         'is_active' => 'aktif',
-                        'periode_id' => $periode->id
+                        'periode_id' => $periodeBaru->id
                     ]);
 
                 } elseif ($status === 'lulus') {
                     if ($kelas->tingkat !== 'XII') {
                         throw new \Exception("Siswa hanya bisa diluluskan jika berada di tingkat XII.");
                     }
-                    // Sudah diupdate di atas (nonaktif + status lulus)
+                    // Tidak disimpan ulang, cukup update status menjadi lulus
+                    // karena sudah nonaktifkan dan set status = lulus di atas
                 }
             }
 
@@ -201,6 +206,7 @@ class KelasController extends Controller
             return redirect()->back()->with('error', 'Gagal memperbarui status siswa: ' . $e->getMessage());
         }
     }
+
 
 
     public function bulkPeriode(Request $request)

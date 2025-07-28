@@ -184,15 +184,15 @@
 
 @push('scripts')
 <script>
-$(document).ready(function() {
-    if (!$.fn.DataTable.isDataTable('#datatable')) {
-        $('#datatable').DataTable({
-            "responsive": true,
-            // "paging": false, // Jika Anda ingin mematikan paginasi bawaan DataTable dan hanya menggunakan paginasi Laravel
-            // "info": false,   // Jika ingin mematikan info bawaan DataTable
-            // Opsi lain jika diperlukan
-        });
-    }
+    $(document).ready(function() {
+        if (!$.fn.DataTable.isDataTable('#datatable')) {
+            $('#datatable').DataTable({
+                "responsive": true,
+                // "paging": false, // Jika Anda ingin mematikan paginasi bawaan DataTable dan hanya menggunakan paginasi Laravel
+                // "info": false,   // Jika ingin mematikan info bawaan DataTable
+                // Opsi lain jika diperlukan
+            });
+        }
 
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {

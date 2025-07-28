@@ -13,7 +13,9 @@ class TindakanSiswa extends Model
         'tanggal',
         'kelas_siswa_id', 
         'id_siswa', 
-        'id_tindakan'];
+        'id_tindakan',
+        'bukti_tindakan'
+    ];
 
     public function siswa()
     {

@@ -35,6 +35,7 @@ class TindakanSiswaController extends Controller
                     'kelas_siswa.id as kelas_siswa_id',
                     'jurusan.nama_jurusan',
                     'kelas.tingkat',
+                    'kelas.nama_kelas',
                     DB::raw('SUM(skor_pelanggaran.skor) as total_skor')
                 )
                 ->groupBy(
@@ -43,7 +44,8 @@ class TindakanSiswaController extends Controller
                     'siswa.nis_nip',
                     'kelas_siswa.id',
                     'jurusan.nama_jurusan',
-                    'kelas.tingkat'
+                    'kelas.tingkat',
+                    'kelas.nama_kelas'
                 )
                 ->having('total_skor', '>=', $batasSkor)
                 ->get();
@@ -68,6 +70,7 @@ class TindakanSiswaController extends Controller
                     'kelas_siswa.id as kelas_siswa_id',
                     'jurusan.nama_jurusan',
                     'kelas.tingkat',
+                    'kelas.nama_kelas',
                     DB::raw('SUM(skor_pelanggaran.skor) as total_skor')
                 )
                 ->groupBy(
@@ -76,11 +79,21 @@ class TindakanSiswaController extends Controller
                     'siswa.nis_nip',
                     'kelas_siswa.id',
                     'jurusan.nama_jurusan',
-                    'kelas.tingkat'
+                    'kelas.tingkat',
+                    'kelas.nama_kelas'
                 )
                 ->having('total_skor', '>=', $batasSkor)
                 ->get();
         }
+
+        // Tambahkan properti apakah siswa ini memiliki tindakan yang belum ditindak
+        foreach ($siswaTindakan as $siswa) {
+            $siswa->ada_tindakan_belum = TindakanSiswa::where('id_siswa', $siswa->siswa_id)
+                ->where('kelas_siswa_id', $siswa->kelas_siswa_id)
+                ->where('status', 'belum')
+                ->exists();
+        }
+
 
         return view('superadmin.tindakan-siswa.index', compact('siswaTindakan','pengaturan'));
     }
@@ -130,11 +143,28 @@ class TindakanSiswaController extends Controller
     }
 
     // (opsional) Tandai tindakan sudah dilakukan
-    public function updateStatus($id)
+    public function updateStatus(Request $request, $id)
     {
+        $request->validate([
+            'bukti_tindakan' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
         $tindakan = TindakanSiswa::findOrFail($id);
-        $tindakan->update(['status' => 'sudah']);
-        return back()->with('success', 'Status tindakan diperbarui.');
+
+        // Upload foto bukti
+        if ($request->hasFile('bukti_tindakan')) {
+            $file = $request->file('bukti_tindakan');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('storage/bukti_tindakan'), $filename);
+
+            $tindakan->bukti_tindakan = $filename;
+            $tindakan->status = 'sudah'; // Set status otomatis jadi selesai
+            $tindakan->save();
+
+            return redirect()->back()->with('success', 'Bukti berhasil diunggah dan status otomatis menjadi selesai.');
+        }
+
+        return redirect()->back()->with('error', 'Gagal mengunggah bukti.');
     }
 
     // Hapus tindakan siswa

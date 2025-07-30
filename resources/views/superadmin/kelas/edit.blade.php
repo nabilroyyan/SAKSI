@@ -37,7 +37,7 @@
                                         <label for="id_users" class="form-control-label">{{ __('SEKRETARIS') }}</label>
                                             <select name="id_users" class="form-control">
                                                 <option value="">-- Pilih sekretaris --</option>
-                                                @foreach($users as $user)
+                                                @foreach($sekretaris as $user)
                                                     <option value="{{ $user->id }}" {{ old('id_users', $kelas->id_users) == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
                                                 @endforeach
                                             </select>
@@ -58,6 +58,23 @@
                                     </div>
         
                                     <div class="col-sm-6">
+                                        <div class="mb-3">
+                                            <label for="id_users" class="form-control-label">{{ __('WALI KELAS') }}</label>
+                                            <select name="id_wakel" class="form-control">
+                                                <option value="">-- Pilih Wali Kelas --</option>
+                                                @foreach($waliKelas as $user)
+                                                    <option value="{{ $user->id }}" {{ old('id_wakel', $kelas->id_wakel) == $user->id ? 'selected' : '' }}>
+                                                        {{ $user->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('id_wakel')
+                                                <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                        
+                                    <div class="col-sm-6">    
                                         <div class="mb-3">
                                             <label for="stt" class="form-label">Status</label>
                                             <select id="stt" name="stt" class="form-control" required>

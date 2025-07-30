@@ -115,9 +115,9 @@ class AbsensiController extends Controller
                 
                 // Set status_surat dengan nilai yang sesuai dengan enum di database
                 if ($needsSurat) {
-                    $absen->status_surat = 'tertunda'; // Gunakan 'pending' instead of 'tertunda'
+                    $absen->status_surat = 'pending'; // Gunakan 'pending' instead of 'pending'
                 } else {
-                    $absen->status_surat = 'diterima'; // Gunakan 'approved' instead of 'diterima'
+                    $absen->status_surat = 'approved'; // Gunakan 'approved' instead of 'approved'
                 }
 
                 // Penanganan file upload jika ada
@@ -137,7 +137,7 @@ class AbsensiController extends Controller
                             $path = $file->storeAs($directory, $filename, 'public');
                             
                             $absen->foto_surat = $path;
-                            $absen->status_surat = 'tertunda'; // Status pending ketika ada file
+                            $absen->status_surat = 'pending'; // Status pending ketika ada file
                             
                             Log::info("Upload berhasil untuk index $index", [
                                 'path' => $path,
@@ -258,7 +258,7 @@ class AbsensiController extends Controller
         $kelasIds = BKKelas::where('id_bk', $userId)->pluck('id_kelas');
 
         $absensi = Absensi::with(['siswa', 'kelasSiswa.kelas.jurusan'])
-            ->where('status_surat', 'tertunda') // Fix: gunakan 'tertunda'
+            ->where('status_surat', 'pending') // Fix: gunakan 'pending'
             ->whereHas('kelasSiswa', function ($q) use ($kelasIds) {
                 $q->whereIn('id_kelas', $kelasIds);
             })
@@ -283,14 +283,14 @@ class AbsensiController extends Controller
             return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk memvalidasi surat ini.');
         }
 
-        if ($absensi->status_surat !== 'tertunda') { // Fix: gunakan 'tertunda'
+        if ($absensi->status_surat !== 'pending') { // Fix: gunakan 'pending'
             return redirect()->back()->with('error', 'Surat sudah divalidasi atau tidak memerlukan validasi.');
         }
 
-        $absensi->status_surat = 'diterima';
+        $absensi->status_surat = 'approved';
         $absensi->save();
 
-        return back()->with('success', 'Surat berhasil divalidasi dan diterima.');
+        return back()->with('success', 'Surat berhasil divalidasi dan approved.');
     }
 
     // Method baru untuk menolak surat
@@ -312,11 +312,11 @@ class AbsensiController extends Controller
             return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk menolak surat ini.');
         }
 
-        if ($absensi->status_surat !== 'tertunda') {
+        if ($absensi->status_surat !== 'pending') {
             return redirect()->back()->with('error', 'Surat sudah divalidasi atau tidak memerlukan validasi.');
         }
 
-        $absensi->status_surat = 'ditolak';
+        $absensi->status_surat = 'rejected'; // Gunakan 'rejected' sesuai enum di database
         $absensi->status = 'alpa';
         $absensi->catatan = $request->catatan;
         $absensi->save();

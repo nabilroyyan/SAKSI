@@ -25,6 +25,11 @@ class Kelas extends Model
         return $this->belongsTo(User::class, 'id_users');
     }
 
+    public function wakel()
+    {
+        return $this->belongsTo(User::class, 'id_wakel');
+    }
+
     public function jurusan()
     {
         return $this->belongsTo(Jurusan::class, 'id_jurusan');

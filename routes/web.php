@@ -11,6 +11,7 @@ use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\PeriodeController;
 use App\Http\Controllers\DasboardController;
+use App\Http\Controllers\WaliKelasController;
 use App\Http\Controllers\PelanggaranController;
 use App\Http\Controllers\RiwayatKelasController;
 use App\Http\Controllers\TindakanSiswaController;
@@ -178,6 +179,13 @@ use App\Http\Controllers\MonitoringPelanggaranController;
             Route::get('/', [RiwayatKelasController::class, 'index'])->name('riwayat.index')->middleware('permission:view riwayat');
             Route::get('/{id}/riwayat', [RiwayatKelasController::class, 'showKelasDetail'])->name('riwayat.showKelasDetail')->middleware('permission:detail riwayat kelas');
             Route::get('/riwayat/cetak-pdf/{kelas_id}/{siswa_id}/{periode_id}', [RiwayatKelasController::class, 'cetakPdfSiswa'])->name('riwayat.cetakPdfSiswa')->middleware('permission:cetak pdf');
+        });
+
+        Route::prefix('wali-kelas')->group(function () {
+            Route::get('/', [WaliKelasController::class, 'index'])->name('walikelas.index')->middleware('permission:view wali-kelas');
+            Route::get('/detail', [WaliKelasController::class, 'detail'])->name('walikelas.detail')->middleware('permission:motoring wali-kelas');
+            Route::get('/siswa/{id}/absensi', [WaliKelasController::class, 'getDetailAbsensi'])->name('walikelas.detail.absensi');
+            Route::get('/siswa/{id}/pelanggaran', [WaliKelasController::class, 'getDetailPelanggaran'])->name('walikelas.detail.pelanggaran');
         });
 
     });

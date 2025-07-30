@@ -51,6 +51,9 @@ class RolePermissionSeeder extends Seeder
             'view bk',
             'assign bk',
 
+            'view wali-kelas',
+            'motoring wali-kelas',
+
             'view skor-pelanggaran',
             'tambah skor-pelanggaran',
             'hapus skor-pelanggaran',
@@ -291,6 +294,14 @@ class RolePermissionSeeder extends Seeder
             'view riwayat-absensi',
 
             'tulisan absensi',
+
+        ]);
+
+        $walikelas->givePermissionTo([
+            'view dashboard',
+            
+            'view wali-kelas',
+            'motoring wali-kelas',
 
         ]);
         

@@ -7,10 +7,10 @@ use App\Models\Siswa;
 use App\Models\Jurusan;
 use App\Models\Periode;
 use App\Models\KelasSiswa;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Foundation\Auth\User;
 
 class KelasController extends Controller
 {
@@ -19,12 +19,12 @@ class KelasController extends Controller
         $stt = $request->get('stt', 'aktif'); // default: aktif
         $tingkat = $request->get('tingkat'); // x, xi, xii
 
-        $query = Kelas::with('jurusan')->where('stt', $stt);
+        $query = Kelas::with(['jurusan', 'wakel:id,name', 'sekretaris:id,name'])->where('stt', $stt);
 
         if ($tingkat) {
             $query->where('tingkat', strtoupper($tingkat)); // pastikan huruf kapital
         }
-
+       
         $kelas = $query->get();
         $siswa = Siswa::whereNotIn('id', function ($query) {
             $query->select('id_siswa')->from('kelas_siswa');
@@ -36,12 +36,24 @@ class KelasController extends Controller
     
     public function create()
     {
-        // Get necessary data for dropdowns
-        $jurusan = Jurusan::all(); // Assuming you have a Jurusan model
-        $users = User::all();
+        // Ambil user dengan role 'walikelas' untuk id_wali dan 'sekretaris' untuk id_users
+        $jurusan = Jurusan::all();
 
-        // Tampilkan form untuk membuat data kelas baru
-        return view('superadmin.kelas.create', compact('jurusan','users'));
+        // Menggunakan hasRole untuk filter user berdasarkan role
+        // Ambil user walikelas & sekretaris yang belum menjadi wali/sekretaris di kelas manapun
+        $waliKelas = User::role('walikelas')
+            ->whereNotIn('id', function($query) {
+            $query->select('id_wakel')->from('kelas')->whereNotNull('id_wakel');
+            })
+            ->get();
+
+        $sekretaris = User::role('sekretaris')
+            ->whereNotIn('id', function($query) {
+            $query->select('id_users')->from('kelas')->whereNotNull('id_users');
+            })
+            ->get();
+
+        return view('superadmin.kelas.create', compact('jurusan', 'waliKelas', 'sekretaris'));
     }
 
     public function store(Request $request)
@@ -51,14 +63,16 @@ class KelasController extends Controller
             'id_jurusan' => 'required|exists:jurusan,id',
             'nama_kelas' => 'required|string|max:255',
             'stt' => 'required|in:tidak_aktif,aktif',
+            'id_wakel' => 'nullable|exists:users,id',
+            'id_users' => 'nullable|exists:users,id',
         ]);
 
         Kelas::create([
             'tingkat' => $request->tingkat,
             'id_jurusan' => $request->id_jurusan,
-            'id_users' => $request->id_users ?? null,
+            'id_users' => $request->id_users ?? null, // sekretaris
             'nama_kelas' => $request->nama_kelas,
-            'id_wakel' => $request->id_wakel ?? null, // Optional,
+            'id_wakel' => $request->id_wakel ?? null, // walikelas
             'stt' => $request->stt,
         ]);
 
@@ -68,14 +82,28 @@ class KelasController extends Controller
     public function edit($id)
     {
         $kelas = Kelas::with(['jurusan', 'siswa'])->find($id);
-        $users = User::all();
+        $waliKelas = User::role('walikelas')
+            ->where(function($query) use ($kelas) {
+                $query->whereNotIn('id', function($sub) {
+                    $sub->select('id_wakel')->from('kelas')->whereNotNull('id_wakel');
+                })
+                ->orWhere('id', $kelas->id_wakel); // biar tetap muncul user yang sedang dipakai
+            })
+            ->get();
 
+        $sekretaris = User::role('sekretaris')
+            ->where(function($query) use ($kelas) {
+                $query->whereNotIn('id', function($sub) {
+                    $sub->select('id_users')->from('kelas')->whereNotNull('id_users');
+                })
+                ->orWhere('id', $kelas->id_users); // biar tetap muncul user yang sedang dipakai
+            })
+            ->get();
         if (!$kelas) {
             return redirect()->route('kelas.index')->with('error', 'Data kelas tidak ditemukan');
         }
 
-
-        return view('superadmin.kelas.edit', compact('kelas','users'));
+        return view('superadmin.kelas.edit', compact('kelas', 'waliKelas', 'sekretaris'));
     }
 
     public function update(Request $request, $id)
@@ -100,6 +128,7 @@ class KelasController extends Controller
             'id_users' => $request->id_users,
             'stt' => $request->stt,
             'nama_kelas' => $request->nama_kelas,
+            'id_wakel' => $request->id_wakel,
         ]);
 
         return redirect()->route('kelas.index')->with('success', 'Data kelas berhasil diperbarui.');

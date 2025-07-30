@@ -20,32 +20,75 @@
                 </div>
             </div>
 
+            @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
+            @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
+            
             <div class="row">
-                <div class="col-12">
+                            <div class="col-12">
                     <div class="card">
                         
                         <div class="card-body">
                             <div class="row mb-3 align-items-center">
-                                <div class="col-md-6">
-                                   <form method="GET" action="{{ route('kelas.index') }}" class="mb-3">
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <select name="stt" class="form-control" onchange="this.form.submit()">
-                                                    <option value="aktif" {{ $stt == 'aktif' ? 'selected' : '' }}>Kelas Aktif</option>
-                                                    <option value="tidak_aktif" {{ $stt == 'tidak_aktif' ? 'selected' : '' }}>Kelas Tidak Aktif</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <select name="tingkat" class="form-control" onchange="this.form.submit()">
-                                                    <option value="">Tinkat</option>
-                                                    <option value="x" {{ $tingkat == 'x' ? 'selected' : '' }}>X</option>
-                                                    <option value="xi" {{ $tingkat == 'xi' ? 'selected' : '' }}>XI</option>
-                                                    <option value="xii" {{ $tingkat == 'xii' ? 'selected' : '' }}>XII</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </form>
-
+                               <div class="col-md-6">
+                                        <div class="card-body p-3">
+                                            <form method="GET" action="{{ route('kelas.index') }}" class="mb-0">
+                                                <div class="row align-items-center">
+                                                    <div class="col-md-1">
+                                                        <div class="text-center">
+                                                            <i class="fas fa-filter text-primary" style="font-size: 1.2rem;"></i>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-5">
+                                                        <div class="form-group mb-0">
+                                                            <label class="form-label text-muted small mb-1">
+                                                                <i class="fas fa-toggle-on me-1"></i>Status Kelas
+                                                            </label>
+                                                            <select name="stt" class="form-select form-select-sm" onchange="this.form.submit()">
+                                                                <option value="aktif" {{ $stt == 'aktif' ? 'selected' : '' }}>
+                                                                    <i class="fas fa-check-circle"></i> Kelas Aktif
+                                                                </option>
+                                                                <option value="tidak_aktif" {{ $stt == 'tidak_aktif' ? 'selected' : '' }}>
+                                                                    <i class="fas fa-times-circle"></i> Kelas Tidak Aktif
+                                                                </option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group mb-0">
+                                                            <label class="form-label text-muted small mb-1">
+                                                                <i class="fas fa-layer-group me-1"></i>Tingkat
+                                                            </label>
+                                                            <select name="tingkat" class="form-select form-select-sm" onchange="this.form.submit()">
+                                                                <option value="">Semua Tingkat</option>
+                                                                <option value="x" {{ $tingkat == 'x' ? 'selected' : '' }}>Kelas X</option>
+                                                                <option value="xi" {{ $tingkat == 'xi' ? 'selected' : '' }}>Kelas XI</option>
+                                                                <option value="xii" {{ $tingkat == 'xii' ? 'selected' : '' }}>Kelas XII</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <div class="d-flex gap-1 mt-3">
+                                                            <button type="submit" class="btn btn-primary btn-sm" title="Terapkan Filter">
+                                                                <i class="fas fa-search"></i>
+                                                            </button>
+                                                            <a href="{{ route('kelas.index') }}" class="btn btn-outline-secondary btn-sm" title="Reset Filter">
+                                                                <i class="fas fa-redo"></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                    </div>
                                 </div>
                                 <div class="col-md-6 text-end">
                                     @can('tambah kelas')                                       
@@ -63,6 +106,8 @@
                                     <th style="width: 5%;">No</th>
                                     <th>Tingkat</th>
                                     <th>Nama Kelas</th>
+                                    <th>Sekretaris</th>
+                                    <th>Wali kelas</th>
                                     <th>Status</th>
                                     <th>total Siswa</th>
                                     <th>Action</th>
@@ -75,6 +120,8 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $k->tingkat }}</td>
                                 <td>{{ $k->nama_kelas }}</td>
+                                <td>{{ $k->sekretaris->name ?? '-' }}</td>
+                                <td>{{ $k->wakel->name ?? '-' }}</td>
                                 <td>
                                     @if($k->stt == 'aktif')
                                         <span class="badge bg-primary">Aktif</span>

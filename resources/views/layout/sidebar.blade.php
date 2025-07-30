@@ -87,6 +87,25 @@
                 </li>
                 @endcan
 
+                @can('view wali-kelas')
+                <li>
+                    <a href="{{ url('/wali-kelas') }}" class="waves-effect">
+                        <i class="bx bx-detail"></i>
+                        <span key="t-ecommerce">Kelas pengampuh</span>
+                    </a>
+                </li>
+                @endcan
+
+                @can('motoring wali-kelas')
+                <li>
+                    <a href="{{ url('/wali-kelas/detail') }}" class="waves-effect">
+                        <i class="bx bx-detail"></i>
+                        <span key="t-ecommerce">Monitoring</span>
+                    </a>
+                </li>
+                @endcan
+                
+
                 @can('tulisan pelanggaran')
                 <li class="menu-title" key="t-apps">Pelanggaran</li>
                 @endcan

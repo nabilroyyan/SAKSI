@@ -44,20 +44,20 @@
                                         </select>
                                     </div>
                                     <div class="mb-3">
-                                    <label for="id_users" class="form-control-label">{{ __('SEKRETARIS') }}</label>
-                                    <select name="id_users" class="form-control">
-                                        <option value="">-- Pilih sekretaris --</option>
-                                        @if(isset($users) && $users->count() > 0)
-                                            @foreach($users as $user)
-                                                <option value="{{ $user->id }}" {{ old('id_users') == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
-                                            @endforeach
-                                        @else
-                                            <option value="" disabled>Data tidak tersedia</option>
-                                        @endif
-                                    </select>
-                                    @error('id_users')
-                                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
-                                    @enderror
+                                        <label for="id_users" class="form-control-label">{{ __('SEKRETARIS') }}</label>
+                                        <select name="id_users" class="form-control">
+                                            <option value="">-- Pilih sekretaris --</option>
+                                            @if(isset($sekretaris) && $sekretaris->count() > 0)
+                                                @foreach($sekretaris as $user)
+                                                    <option value="{{ $user->id }}" {{ old('id_users') == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
+                                                @endforeach
+                                            @else
+                                                <option value="" disabled>Data tidak tersedia</option>
+                                            @endif
+                                        </select>
+                                        @error('id_users')
+                                            <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                 </div>
 
@@ -81,7 +81,29 @@
                                         <input type="hidden" id="stt" name="stt" value="aktif">
                                     </div>
                                 </div>
+
+                                <div class="col-sm-6">
+                                <div class="mb-3">
+                                    <label for="id_wakel" class="form-control-label">{{ __('WALI KELAS') }}</label>
+                                        <select name="id_wakel" class="form-control">
+                                            <option value="">-- Pilih Wali Kelas --</option>
+                                           @if(isset($waliKelas) && $waliKelas->count() > 0)
+                                                {{-- Menggunakan hasRole untuk filter user berdasarkan role --}}
+                                                @foreach($waliKelas as $user)
+                                                    <option value="{{ $user->id }}" {{ old('id_wakel') == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
+                                                @endforeach
+                                            @else
+                                                <option value="" disabled>Data tidak tersedia</option>
+                                            @endif
+                                        </select>
+                                        @error('id_wakel')
+                                            <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
+
+                           
 
                          
                             <div class="d-flex flex-wrap gap-2">

@@ -164,8 +164,11 @@ use App\Http\Controllers\MonitoringPelanggaranController;
 
          Route::prefix('monitoring-absensi')->group(function () {
             Route::get('/', [MonitoringAbsensiController::class, 'index'])->name('monitoring-absensi.index')->middleware('permission:view monitoring-absensi');
-            Route::get('/detail/{siswa}', [AbsensiController::class, 'getDetail'])->name('monitoring-absensi.detail')->middleware('permission:detail monitoring-absensi');
+            Route::get('/detail/{id}', [MonitoringAbsensiController::class, 'detail'])->name('monitoring-absensi.detail');
+            Route::get('/pdf-absensi', [MonitoringAbsensiController::class, 'exportPdf'])->name('pdf.absensi');
+            Route::get('/pdf-detail/{id}', [MonitoringAbsensiController::class, 'exportDetailPdf'])->name('pdf.detail');
         });
+
         Route::prefix('periode')->group(function () {
             Route::get('/', [PeriodeController::class, 'index'])->name('periode.index')->middleware('permission:view periode');
             Route::get('/create', [PeriodeController::class, 'create'])->name('periode.create')->middleware('permission:tambah periode');

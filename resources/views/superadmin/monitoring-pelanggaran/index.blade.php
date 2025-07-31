@@ -201,7 +201,7 @@
                         @else
                             <div class="table-responsive">
                                 <table id="datatable" class="table table-bordered dt-responsive nowrap w-100">
-                                    <thead class="table-dark">
+                                    <thead class="">
                                         <tr>
                                             <th style="width: 5%;">No</th>
                                             <th>NIS</th>
@@ -308,7 +308,7 @@
                 <div id="detailContent" style="display: none;">
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped">
-                            <thead class="table-dark">
+                            <thead class="">
                                 <tr>
                                     <th style="width: 5%;">No</th>
                                     <th>Tanggal</th>

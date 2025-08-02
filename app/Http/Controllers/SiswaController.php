@@ -71,9 +71,6 @@ class SiswaController extends Controller
     }
 
 
-
-
-
     // Tampilkan detail siswa
     public function show(Siswa $siswa)
     {
@@ -112,7 +109,7 @@ class SiswaController extends Controller
 
         // 2. Jika siswa tidak ditemukan, kembalikan ke halaman index dengan pesan error.
         if (!$siswa) {
-            return redirect()->route('siswa.index')->with('error', 'Data siswa tidak ditemukan');
+            return redirect()->route('siswa.index')->with('error', 'Data siswa tidak dmukan');
         }
 
         // 3. Gunakan forceDelete() untuk menghapus data secara permanen.
@@ -179,4 +176,27 @@ class SiswaController extends Controller
 
         return redirect()->back()->with('success', 'Siswa berhasil ditambahkan ke kelas.');
     }
+
+    public function allDestroy(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer|exists:siswa,id',
+        ]);
+
+        $ids = $request->ids;
+
+        $siswa = Siswa::whereIn('id', $ids)->get();
+
+        if ($siswa->isEmpty()) {
+            return back()->with('error', 'Data siswa tidak ditemukan');
+        }
+
+        Siswa::whereIn('id', $ids)->delete();
+
+        return back()->with('success', 'Data siswa berhasil dihapus');
+    }
+
+
+
 }

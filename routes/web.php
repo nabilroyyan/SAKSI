@@ -38,13 +38,14 @@ use App\Http\Controllers\MonitoringPelanggaranController;
             Route::post('/store', [SiswaController::class, 'store'])->name('siswa.store');
             Route::get('/edit/{siswa}', [SiswaController::class, 'edit'])->name('siswa.edit')->middleware('permission:edit siswa');
             Route::put('/{siswa}', [SiswaController::class, 'update'])->name('siswa.update')->middleware('permission:update siswa');
-            Route::delete('/{id}', [SiswaController::class, 'destroy'])->name('siswa.destroy')->middleware('permission:hapus siswa');
+            Route::delete('/delete/{id}', [SiswaController::class, 'destroy'])->name('siswa.destroy')->middleware('permission:hapus siswa');
             //menampilakn kelas siswa
             Route::get('/showKelasSiswa', [SiswaController::class, 'showKelasSiswa'])->name('showKelasSiswa')->middleware('permission:view kelas-siswa');
             //tambah siswa ke kelas
             Route::get('/kelas/{id}/siswa', [SiswaController::class, 'showSiswa'])->name('kelas.siswa')->middleware('permission:tambah kelas-siswa');
             Route::post('/{kelas}/siswa', [SiswaController::class, 'storeSiswa'])->name('kelas.siswa.store');// Changed to POST
             Route::post('siswa/import/data', [SiswaController::class, 'import'])->name('siswa.import')->middleware('permission:import-siswa');
+            Route::delete('/allDestroy', [SiswaController::class, 'allDestroy'])->name('allDestroy');
         });
 
         Route::prefix('jurusan')->group(function () {

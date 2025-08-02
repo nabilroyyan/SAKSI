@@ -198,7 +198,7 @@ class KelasController extends Controller
                         'is_active' => 'aktif',
                         'periode_id' => $periodeBaru->id
                     ]);
-
+ 
                 } elseif ($status === 'tidak_naik') {
                     // Tetap di kelas saat ini
                     KelasSiswa::create([
@@ -249,7 +249,7 @@ class KelasController extends Controller
         $siswaIds = explode(',', $request->siswa_ids);
         $kelasSiswaIds = explode(',', $request->kelas_siswa_ids);
         $idKelas = $request->id_kelas;
-
+        
         $periode = Periode::where('is_active', 'aktif')->first();
         if (!$periode) {
             return redirect()->back()->with('error', 'Periode aktif tidak ditemukan.');

@@ -39,6 +39,14 @@
                             </div>
                         </div>
 
+                        <form action="{{ route('allDestroy') }}" method="POST" id="bulkDeleteForm">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger" id="btnDeleteAll" disabled>
+                                <i class="fas fa-trash-alt me-1"></i> Hapus Semua Terpilih
+                            </button>
+                        </form>
+
                         @if (session('success'))
                             <div class="alert alert-success alert-dismissible fade show" role="alert">
                                 {{ session('success') }}
@@ -56,13 +64,16 @@
                                 {{ $errors->first('file_siswa') }}
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
-                        @endif
+                        @endif                      
 
                         <h4 class="card-title mt-4">Table Siswa</h4>
                         <div class="table-responsive">
-                            <table id="" class="table table-bordered dt-responsive nowrap w-100">
+                            <table id="tableedit" class="table table-bordered dt-responsive nowrap w-100">
                                 <thead class="table-light">
                                     <tr>
+                                        <td>
+                                            <input type="checkbox" id="checkAll">
+                                        </td>
                                         <th>No</th>
                                         <th>Nama siswa</th>
                                         <th>Kode</th>
@@ -80,6 +91,9 @@
                                 <tbody>
                                     @forelse ($siswa as $index => $item)
                                         <tr>
+                                            <td>
+                                                <input type="checkbox" class="checkItem" name="ids[]" value="{{ $item->id }}">
+                                            </td>
                                             <td>{{ $siswa instanceof \Illuminate\Pagination\LengthAwarePaginator ? $siswa->firstItem() + $index : $loop->iteration }}</td>
                                             <td>{{ $item->nama_siswa }}</td>
                                             <td>{{ $item->kode }}</td>
@@ -184,35 +198,52 @@
 
 @push('scripts')
 <script>
-    $(document).ready(function() {
-        if (!$.fn.DataTable.isDataTable('#datatable')) {
-            $('#datatable').DataTable({
-                "responsive": true,
-                // "paging": false, // Jika Anda ingin mematikan paginasi bawaan DataTable dan hanya menggunakan paginasi Laravel
-                // "info": false,   // Jika ingin mematikan info bawaan DataTable
-                // Opsi lain jika diperlukan
-            });
-        }
-
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl)
-    })
-
-    $('.delete-form').on('submit', function(e) {
-        var namaSiswa = $(this).find('button[type="submit"]').data('nama');
-        if (!confirm('Apakah Anda yakin ingin menghapus siswa ' + namaSiswa + '?')) {
-            e.preventDefault();
-        }
+$(document).ready(function() {
+    $('#tableedit').DataTable({
+        responsive: false,
+        paging: false,
+        searching: true,
+        info: false,
+        ordering: false
     });
 
-    // Jika ada error validasi file dari server, modal bisa dibuka kembali untuk menampilkan error.
-    // Ini memerlukan sedikit logika tambahan jika Anda ingin error validasi juga muncul di dalam modal.
-    // Untuk saat ini, error validasi akan muncul di atas tabel seperti biasa.
-    @if ($errors->has('file_siswa'))
-        // var importModal = new bootstrap.Modal(document.getElementById('importSiswaModal'));
-        // importModal.show();
-    @endif
+    $('#checkAll').on('click', function () {
+        $('.checkItem').prop('checked', this.checked);
+        toggleDeleteAll();
+    });
+
+    $('.checkItem').on('change', function () {
+        toggleDeleteAll();
+    });
+
+    function toggleDeleteAll() {
+        const anyChecked = $('.checkItem:checked').length > 0;
+        $('#btnDeleteAll').prop('disabled', !anyChecked);
+    }
+
+    $('#bulkDeleteForm').on('submit', function (e) {
+        e.preventDefault(); // cegah submit default
+
+        // Bersihkan input sebelumnya
+        $(this).find('input[name="ids[]"]').remove();
+
+        // Tambahkan input hidden ids[]
+        $('.checkItem:checked').each(function () {
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'ids[]',
+                value: $(this).val()
+            }).appendTo('#bulkDeleteForm');
+        });
+
+        const total = $('.checkItem:checked').length;
+
+        if (total === 0) {
+            alert('Tidak ada siswa dipilih');
+        } else if (confirm(`Yakin ingin menghapus ${total} siswa?`)) {
+            this.submit(); // lanjut submit form
+        }
+    });
 });
 </script>
 @endpush

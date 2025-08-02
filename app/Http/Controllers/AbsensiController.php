@@ -58,7 +58,7 @@ class AbsensiController extends Controller
             'absensi.*.kelas_siswa_id' => 'required|exists:kelas_siswa,id',
             'absensi.*.status' => 'required|in:hadir,sakit,izin,alpa',
             'absensi.*.catatan' => 'nullable|string|max:500',
-            'absensi.*.foto_surat' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120', // Reduced to 5MB
+            'absensi.*.foto_surat' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240', // 10MB
         ]);
 
         // Additional validation for required foto_surat
@@ -66,7 +66,7 @@ class AbsensiController extends Controller
         foreach ($absensiData as $index => $data) {
             if (in_array($data['status'], ['sakit', 'izin'])) {
                 $request->validate([
-                    "absensi.$index.foto_surat" => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120'
+                    "absensi.$index.foto_surat" => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240', // 10MB
                 ], [
                     "absensi.$index.foto_surat.required" => "Foto surat wajib diupload untuk status {$data['status']}."
                 ]);

@@ -92,8 +92,7 @@
                                                         </td>
                                                         <td>
                                                             <input type="file" name="absensi[{{ $i }}][foto_surat]" 
-                                                                   class="form-control foto-surat-{{ $i }}" 
-                                                                   accept=".jpg,.jpeg,.png,.pdf" disabled>
+                                                                   class="form-control foto-surat-{{ $i }}" disabled>
                                                             <small class="text-muted">Wajib jika sakit/izin (Max: 5MB)</small>
                                                             <div class="invalid-feedback" id="error-foto-{{ $i }}"></div>
                                                         </td>

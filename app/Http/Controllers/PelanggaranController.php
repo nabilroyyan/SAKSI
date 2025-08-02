@@ -49,7 +49,7 @@ class PelanggaranController extends Controller
                 }
             ],
             'id_skor_pelanggaran' => 'required|exists:skor_pelanggaran,id',
-            'bukti_pelanggaran' => 'nullable|image|mimes:jpeg,png,jpg|max:10048'
+            'bukti_pelanggaran' => 'nullable|image|mimes:jpeg,png,jpg|max:51200'
         ]);
 
         $kelasSiswa = KelasSiswa::where('id_siswa', $request->id_siswa)

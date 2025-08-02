@@ -137,7 +137,7 @@
                                 id="bukti_pelanggaran"
                                 accept="image/*"
                             >
-                            <small class="text-muted">Format: JPEG, PNG (Maks. 10MB)</small>
+                            <small class="text-muted">Format: JPEG, PNG (Maks. 50MB)</small>
                             <div class="invalid-feedback" id="error-bukti-pelanggaran"></div>
                             <!-- Preview gambar (opsional) -->
                             <div class="mt-2">
@@ -186,7 +186,7 @@
         label.textContent = file.name;
 
         // Validasi ukuran
-        if (file.size > 10 * 1024 * 1024) {
+        if (file.size > 50 * 1024 * 1024) {
             alert('Ukuran file maksimal 10MB!');
             e.target.value = ''; // Reset input
             label.textContent = 'Pilih file atau ambil foto';

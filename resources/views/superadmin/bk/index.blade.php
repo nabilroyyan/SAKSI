@@ -96,13 +96,13 @@
                                                                name="kelas_ids[]" 
                                                                value="{{ $k->id }}"
                                                                data-tingkat="{{ $tingkat }}"
-                                                               data-nama="{{ $k->tingkat }} {{ $k->jurusan->nama_jurusan }}"
+                                                               data-nama="{{ $k->tingkat }} {{ $k->nama_kelas }}"
                                                                {{ $sudahDiampu ? 'data-sudah-diampu=true' : '' }}
                                                                {{ $sudahDiampu ? 'data-pengampu='.$pengampuBk : '' }}>
                                                         <label class="custom-control-label d-flex justify-content-between align-items-center" 
                                                                for="kelas_{{ $k->id }}">
                                                             <span class="kelas-name">
-                                                                {{ $k->tingkat }} {{ $k->jurusan->nama_jurusan }}
+                                                                {{ $k->tingkat }} {{ $k->nama_kelas }}
                                                             </span>
                                                             @if($sudahDiampu)
                                                                 <small class="px-1 text-warning ml-2">
@@ -185,11 +185,11 @@
                                     @foreach($bk->kelasYangDiampuBk as $kelas)
                                         <span class="badge badge-primary mr-1 mb-1 d-inline-flex text-black align-items-center">
                                             <i class="fas fa-graduation-cap mr-1 px-2"></i>
-                                            {{ $kelas->tingkat }} {{ $kelas->jurusan->nama_jurusan }}
+                                            {{ $kelas->tingkat }} {{ $kelas->nama_kelas }}
                                             <a href="{{ route('bk.unassign', ['bkId' => $bk->id, 'kelasId' => $kelas->id]) }}" 
                                                class="text-white ml-2"
                                                style="margin-left:8px;"
-                                               onclick="return confirm('Hapus assign kelas {{ $kelas->tingkat }} {{ $kelas->jurusan->nama_jurusan }}?')"
+                                               onclick="return confirm('Hapus assign kelas {{ $kelas->tingkat }} {{ $kelas->nama_kelas }}?')"
                                                title="Hapus assign kelas ini">
                                                 <i class="fas fa-times"></i>
                                             </a>

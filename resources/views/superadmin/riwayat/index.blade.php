@@ -54,7 +54,7 @@
                             @foreach($kelas as $k)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $k->tingkat }}</td>
+                                <td>{{ $k->tingkat }} {{ $k->nama_kelas }}</td>
                                 <td>{{ $k->jurusan->nama_jurusan }}</td>
                                 <td>
                                     @if($k->stt == 'aktif')

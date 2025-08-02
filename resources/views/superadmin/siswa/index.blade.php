@@ -131,11 +131,7 @@
                                             @endcan
                                             </td>
                                         </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="12" class="text-center">Tidak ada data siswa.</td>
-                                        </tr>
-                                    @endforelse
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>

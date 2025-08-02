@@ -155,7 +155,7 @@
     function validateFile(input, index) {
         const file = input.files[0];
         const errorDiv = document.getElementById(`error-foto-${index}`);
-        const maxSize = 10 * 1024 * 1024; // 5MB in bytes
+        const maxSize = 10 * 1024 * 1024; // 10MB in bytes
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
         
         if (file) {

@@ -130,18 +130,16 @@
 
                         <div class="form-group">
                             <label for="bukti_pelanggaran">Bukti Pelanggaran (Opsional)</label>
-                            <div class="custom-file">
-                                <input type="file" 
-                                    class="custom-file-input" 
-                                    id="bukti_pelanggaran" 
-                                    name="bukti_pelanggaran"
-                                    accept="image/*" 
-                                    capture="environment">
-                                <label class="custom-file-label" for="bukti_pelanggaran" id="label_bukti">Pilih file atau ambil foto</label>
-
-                            </div>
-                            <small class="form-text text-muted">Format: JPEG, PNG (Maks. 10MB)</small>
-                            
+                            <input 
+                                type="file" 
+                                name="bukti_pelanggaran" 
+                                class="form-control" 
+                                id="bukti_pelanggaran"
+                                accept="image/*"
+                                capture="environment"
+                            >
+                            <small class="text-muted">Format: JPEG, PNG (Maks. 10MB)</small>
+                            <div class="invalid-feedback" id="error-bukti-pelanggaran"></div>
                             <!-- Preview gambar (opsional) -->
                             <div class="mt-2">
                                 <img id="preview" src="#" alt="Preview gambar" style="max-width: 200px; display: none;"/>

@@ -17,7 +17,16 @@
                         </div>
                     </div>
                 </div>
-            </div>   
+            </div>
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                    </ul>
+                </div>
+            @endif
     <div class="card shadow mb-4">
         <div class="card-body">
             <form action="{{ route('pelanggaran.store') }}" method="POST" enctype="multipart/form-data">

@@ -20,19 +20,6 @@
             </div>   
     <div class="card shadow mb-4">
         <div class="card-body">
-              @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show mt-2" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
-                    {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
             <form action="{{ route('pelanggaran.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="row">
@@ -149,7 +136,6 @@
                                 class="form-control" 
                                 id="bukti_pelanggaran"
                                 accept="image/*"
-                                capture="environment"
                             >
                             <small class="text-muted">Format: JPEG, PNG (Maks. 10MB)</small>
                             <div class="invalid-feedback" id="error-bukti-pelanggaran"></div>

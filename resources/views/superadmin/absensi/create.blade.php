@@ -93,7 +93,7 @@
                                                         <td>
                                                             <input type="file" name="absensi[{{ $i }}][foto_surat]" 
                                                                    class="form-control foto-surat-{{ $i }}" disabled>
-                                                            <small class="text-muted">Wajib jika sakit/izin (Max: 5MB)</small>
+                                                            <small class="text-muted">Wajib jika sakit/izin (Max: 10MB)</small>
                                                             <div class="invalid-feedback" id="error-foto-{{ $i }}"></div>
                                                         </td>
                                                     </tr>
@@ -155,7 +155,7 @@
     function validateFile(input, index) {
         const file = input.files[0];
         const errorDiv = document.getElementById(`error-foto-${index}`);
-        const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+        const maxSize = 10 * 1024 * 1024; // 5MB in bytes
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
         
         if (file) {

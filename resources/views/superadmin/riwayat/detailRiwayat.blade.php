@@ -6,7 +6,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                    <h4 class="mb-sm-0 font-size-18">Detail Riwayat Kelas {{ $kelas->tingkat }} {{ $kelas->jurusan->nama_jurusan }}</h4>
+                    <h4 class="mb-sm-0 font-size-18">Detail Riwayat Kelas {{ $kelas->tingkat }} {{ $kelas->nama_kelas }}</h4>
 
                     <div class="page-title-right">
                         <ol class="breadcrumb m-0">
@@ -29,7 +29,7 @@
                                 <table class="table table-borderless">
                                     <tr>
                                         <td width="30%"><strong>Kelas</strong></td>
-                                        <td>: {{ $kelas->tingkat }} {{ $kelas->jurusan->nama_jurusan }}</td>
+                                        <td>: {{ $kelas->tingkat }} {{ $kelas->nama_kelas }}</td>
                                     </tr>
                                     <tr>
                                         <td><strong>Status</strong></td>

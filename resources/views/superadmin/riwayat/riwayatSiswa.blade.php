@@ -155,7 +155,7 @@
     <!-- Header -->
     <div class="header">
         <h1>LAPORAN RIWAYAT SISWA</h1>
-        <h2>{{ strtoupper($kelas->tingkat) }} {{ strtoupper($kelas->jurusan->nama_jurusan) }}</h2>
+        <h2>{{ strtoupper($kelas->tingkat) }} {{ strtoupper($kelas->nama_kelas) }}</h2>
     </div>
 
     <!-- Informasi Siswa -->

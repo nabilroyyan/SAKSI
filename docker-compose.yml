@@ -11,7 +11,8 @@ services:
     volumes:
       - ./:/var/www/html:cached              
       - /var/www/html/vendor               
-      - /var/www/html/storage                
+      - /var/www/html/storage
+      - ./docker/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini                
     environment:
       - APACHE_DOCUMENT_ROOT=/var/www/html/public
     command: >

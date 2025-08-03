@@ -84,7 +84,7 @@
                         </span>
                     </td>
                     <td>
-                        @if($a->status_surat == 'tertunda')
+                        @if($a->status_surat == 'pending')
                             <div class="btn-group" role="group">
                                 <!-- Form untuk menerima surat -->
                                 <form action="{{ route('validasiSurat', $a->id) }}" method="POST" style="display: inline;">

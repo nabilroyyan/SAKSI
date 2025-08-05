@@ -177,24 +177,54 @@ class SiswaController extends Controller
         return redirect()->back()->with('success', 'Siswa berhasil ditambahkan ke kelas.');
     }
 
-    public function allDestroy(Request $request)
+     public function allDestroy(Request $request)
     {
+        // 1. Validasi input untuk memastikan 'ids' adalah array yang valid.
         $request->validate([
             'ids' => 'required|array',
             'ids.*' => 'integer|exists:siswa,id',
         ]);
 
-        $ids = $request->ids;
+        $siswaIds = $request->ids;
 
-        $siswa = Siswa::whereIn('id', $ids)->get();
+        // 2. Memulai transaksi database untuk menjaga integritas data.
+        DB::beginTransaction();
 
-        if ($siswa->isEmpty()) {
-            return back()->with('error', 'Data siswa tidak ditemukan');
+        try {
+            // 3. Ambil data siswa yang akan dihapus untuk mendapatkan 'nis_nip' mereka.
+            // Ini diperlukan untuk menghapus akun user yang terkait.
+            $siswaToDelete = Siswa::whereIn('id', $siswaIds)->get();
+
+            if ($siswaToDelete->isEmpty()) {
+                // Tidak perlu rollback karena belum ada operasi database.
+                return back()->with('error', 'Data siswa tidak ditemukan.');
+            }
+
+            // 4. Kumpulkan semua 'nis_nip' dari siswa yang akan dihapus.
+            $nisNipList = $siswaToDelete->pluck('nis_nip')->filter()->toArray();
+
+            // 5. Hapus akun user terkait secara permanen, jika ada.
+            if (!empty($nisNipList)) {
+                User::whereIn('nis_nip', $nisNipList)->forceDelete();
+            }
+
+            // 6. Ganti ->delete() menjadi ->forceDelete() untuk menghapus data siswa secara permanen.
+            Siswa::whereIn('id', $siswaIds)->forceDelete();
+
+            // 7. Jika semua operasi berhasil, konfirmasi transaksi.
+            DB::commit();
+
+            return back()->with('success', 'Data siswa yang dipilih berhasil dihapus secara permanen.');
+
+        } catch (\Exception $e) {
+            // 8. Jika terjadi kesalahan, batalkan semua operasi yang sudah berjalan.
+            DB::rollBack();
+
+            // Opsional: catat error untuk keperluan debugging.
+            // \Log::error('Gagal menghapus banyak siswa: ' . $e->getMessage());
+
+            return back()->with('error', 'Terjadi kesalahan saat mencoba menghapus data.');
         }
-
-        Siswa::whereIn('id', $ids)->delete();
-
-        return back()->with('success', 'Data siswa berhasil dihapus');
     }
 
 

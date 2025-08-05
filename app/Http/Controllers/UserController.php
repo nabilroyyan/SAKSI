@@ -41,37 +41,53 @@ class UserController extends Controller
     public function create()
     {
         $roles = Role::all();
-        return view('superadmin.user.create', compact('roles'));
+        return view('halaman-admin.user.createUser', compact('roles'));
     }
 
     public function store(Request $request)
     {
+        // Ambil role yang dipilih untuk pengecekan
+        $role = Role::find($request->input('role'));
 
-        // Validasi input
-        $validated = $request->validate([
+        // Validasi dasar
+        $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'nis_nip' => 'required|string|unique:users',
-            'role' => 'required|exists:roles,id', // Validasi role ID harus ada di tabel roles
-        ]);
-    
-        // Buat user baru
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => bcrypt($validated['password']),
-            'nis_nip' => $validated['nis_nip'],
+            'role' => 'required|exists:roles,id',
+        ];
+
+        // Tambahkan validasi kondisional untuk nis_nip
+        // Hanya wajib diisi jika role yang dipilih adalah 'siswa'
+        if ($role && strtolower($role->name) === 'siswa') {
+            $rules['nis_nip'] = 'required|string|unique:users,nis_nip';
+        }
+
+        $request->validate($rules);
+
+        // Siapkan data user
+        $userData = [
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'password' => bcrypt($request->input('password')),
             'email_verified_at' => now(),
-        ]);
-    
-        // Ambil role berdasarkan ID
-        $role = Role::findById($validated['role']);
-        
-        // Assign role ke user berdasarkan nama
+        ];
+
+        // Tentukan nilai nis_nip berdasarkan role
+        if ($role && strtolower($role->name) === 'siswa') {
+            // Jika role adalah siswa, gunakan input dari form
+            $userData['nis_nip'] = $request->input('nis_nip');
+        } else {
+            // Jika bukan siswa, buat NIP unik secara otomatis
+            // Format: [Huruf Awal Role]-[Timestamp]
+            $prefix = strtoupper(substr($role->name, 0, 1));
+            $userData['nis_nip'] = $prefix . '-' . time();
+        }
+
+        // Buat user baru dan berikan role
+        $user = User::create($userData);
         $user->assignRole($role->name);
-    
-        // Redirect dengan pesan sukses
+
         return redirect('/users')->with('success', 'User berhasil dibuat dan diberikan role.');
     }
 

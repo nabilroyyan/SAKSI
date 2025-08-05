@@ -22,10 +22,13 @@ use App\Http\Controllers\MonitoringPelanggaranController;
 
 
     Route::middleware(['guest'])->group(function () {
-        Route::get('/login', [AuthController::class, 'index'])->name('login');
-        Route::post('/login_action', [AuthController::class, 'login'])->name('login.action');
-
+        Route::get('/', [AuthController::class, 'index'])->name('login');
+        Route::post('/', [AuthController::class, 'login']);   
     });
+
+    Route::get('/home', function(){ //ketika sudah login dan berada di halaman admin kita tidak bisa mengakses halaman login dan terotomatis ter redirect ke halaman admin kembali
+    return redirect('/dashboard');
+});
 
     Route::middleware(['auth', 'verified', 'role_permission'])->group(function () {
         Route::get('/dashboard', [DasboardController::class, 'superadmin'])->name('superadmin');
@@ -121,7 +124,7 @@ use App\Http\Controllers\MonitoringPelanggaranController;
         });
        
         Route::prefix('absensi')->group(function () {
-            Route::get('/createHariIni', [AbsensiController::class, 'createHariIni'])->name('createHariIni')->middleware('permission:view input-absensi');
+            Route::get('/', [AbsensiController::class, 'createHariIni'])->name('createHariIni')->middleware('permission:view input-absensi');
             Route::post('/store', [AbsensiController::class, 'store'])->name('absensi.store');
             Route::get('/riwayatHariIni', [AbsensiController::class, 'riwayatHariIni'])->name('riwayatHariIni')->middleware('permission:view riwayat-absensi');
             Route::delete('/hapus/{id}', [AbsensiController::class, 'hapusAbsensi'])->name('hapusAbsensi');

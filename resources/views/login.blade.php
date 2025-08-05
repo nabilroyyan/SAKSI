@@ -395,7 +395,7 @@
                         
                      
                         
-                        <form method="POST" action="/login_action" class="forms-sample">
+                        <form method="POST" action="/" class="forms-sample">
                             @csrf
                             <input type="hidden" name="user_type" id="user_type" value="student">
                             
@@ -435,8 +435,6 @@
                                     <i class="fas fa-sign-in-alt me-2"></i> Masuk
                                 </button>
                             </div>
-                            
-
                            
                         </form>
                     </div>

@@ -35,7 +35,7 @@ class AuthController extends Controller
             } elseif ($user->hasRole('bk')) {
                 return redirect()->intended('/dashboard'); // Route untuk guru
             } elseif ($user->hasRole('sekretaris')) {
-                return redirect()->intended('/dashboard'); // Route untuk guru
+                return redirect()->intended('/absensi'); // Route untuk guru
             } elseif ($user->hasRole('bk')) {
                 return redirect()->intended('/dashboard'); // Route untuk guru
             } elseif ($user->hasRole('walikelas')) {
@@ -60,6 +60,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+        return redirect('/');
     }
 }

@@ -82,6 +82,12 @@ class KelasController extends Controller
     public function edit($id)
     {
         $kelas = Kelas::with(['jurusan', 'siswa'])->find($id);
+
+        if (!$kelas) {
+            return redirect()->route('kelas.index')->with('error', 'Data kelas tidak ditemukan');
+        }
+
+        $jurusan = Jurusan::all();
         $waliKelas = User::role('walikelas')
             ->where(function($query) use ($kelas) {
                 $query->whereNotIn('id', function($sub) {
@@ -99,11 +105,7 @@ class KelasController extends Controller
                 ->orWhere('id', $kelas->id_users); // biar tetap muncul user yang sedang dipakai
             })
             ->get();
-        if (!$kelas) {
-            return redirect()->route('kelas.index')->with('error', 'Data kelas tidak ditemukan');
-        }
-
-        return view('superadmin.kelas.edit', compact('kelas', 'waliKelas', 'sekretaris'));
+        return view('superadmin.kelas.edit', compact('kelas', 'jurusan', 'waliKelas', 'sekretaris'));
     }
 
     public function update(Request $request, $id)

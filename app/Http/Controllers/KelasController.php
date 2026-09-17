@@ -24,7 +24,7 @@ class KelasController extends Controller
         if ($tingkat) {
             $query->where('tingkat', strtoupper($tingkat)); // pastikan huruf kapital
         }
-       
+
         $kelas = $query->get();
         $siswa = Siswa::whereNotIn('id', function ($query) {
             $query->select('id_siswa')->from('kelas_siswa');
@@ -33,7 +33,7 @@ class KelasController extends Controller
         return view('superadmin.kelas.index', compact('kelas', 'siswa', 'stt', 'tingkat'));
     }
 
-    
+
     public function create()
     {
         // Ambil user dengan role 'walikelas' untuk id_wali dan 'sekretaris' untuk id_users
@@ -82,12 +82,6 @@ class KelasController extends Controller
     public function edit($id)
     {
         $kelas = Kelas::with(['jurusan', 'siswa'])->find($id);
-
-        if (!$kelas) {
-            return redirect()->route('kelas.index')->with('error', 'Data kelas tidak ditemukan');
-        }
-
-        $jurusan = Jurusan::all();
         $waliKelas = User::role('walikelas')
             ->where(function($query) use ($kelas) {
                 $query->whereNotIn('id', function($sub) {
@@ -105,6 +99,10 @@ class KelasController extends Controller
                 ->orWhere('id', $kelas->id_users); // biar tetap muncul user yang sedang dipakai
             })
             ->get();
+        if (!$kelas) {
+            return redirect()->route('kelas.index')->with('error', 'Data kelas tidak ditemukan');
+        }
+
         return view('superadmin.kelas.edit', compact('kelas', 'jurusan', 'waliKelas', 'sekretaris'));
     }
 
@@ -200,7 +198,7 @@ class KelasController extends Controller
                         'is_active' => 'aktif',
                         'periode_id' => $periodeBaru->id
                     ]);
- 
+
                 } elseif ($status === 'tidak_naik') {
                     // Tetap di kelas saat ini
                     KelasSiswa::create([
@@ -251,7 +249,7 @@ class KelasController extends Controller
         $siswaIds = explode(',', $request->siswa_ids);
         $kelasSiswaIds = explode(',', $request->kelas_siswa_ids);
         $idKelas = $request->id_kelas;
-        
+
         $periode = Periode::where('is_active', 'aktif')->first();
         if (!$periode) {
             return redirect()->back()->with('error', 'Periode aktif tidak ditemukan.');
@@ -353,7 +351,7 @@ class KelasController extends Controller
     {
         $data = KelasSiswa::findOrFail($id);
         $id_kelas = $data->id_kelas;
-        
+
         $data->delete();
 
         return redirect()->route('kelas.detailSiswa', $id_kelas)->with('success', 'Siswa berhasil dihapus dari kelas.');
@@ -372,5 +370,5 @@ class KelasController extends Controller
         return redirect()->route('kelas.index')->with('success', 'Data kelas berhasil dihapus');
     }
 
-    
+
 }

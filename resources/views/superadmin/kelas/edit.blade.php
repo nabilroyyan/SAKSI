@@ -56,6 +56,23 @@
                                             @enderror
                                         </div>
                                     </div>
+
+                                    <div class="col-sm-6">
+                                        <div class="mb-3">
+                                            <label for="id_jurusan" class="form-control-label">Jurusan</label>
+                                            <select id="id_jurusan" name="id_jurusan" class="form-control" required>
+                                                <option value="">-- Pilih Jurusan --</option>
+                                                @foreach($jurusan as $item)
+                                                    <option value="{{ $item->id }}" {{ old('id_jurusan', $kelas->id_jurusan) == $item->id ? 'selected' : '' }}>
+                                                        {{ $item->nama_jurusan }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('id_jurusan')
+                                                <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
         
                                     <div class="col-sm-6">
                                         <div class="mb-3">
@@ -73,6 +90,8 @@
                                             @enderror
                                         </div>
                                     </div>
+
+                                    
                                         
                                     <div class="col-sm-6">    
                                         <div class="mb-3">

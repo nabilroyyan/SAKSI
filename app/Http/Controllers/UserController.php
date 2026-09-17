@@ -14,34 +14,35 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $roleFilter = $request->input('role');
-        
+
         // Query dasar
         $usersQuery = User::query();
-        
+
         // Filter berdasarkan role jika ada
         if ($roleFilter) {
             $usersQuery->role($roleFilter);
         }
-        
+
         // Ambil data user
         $users = $usersQuery->get();
-        
+
         // Ambil semua role yang ada
         $roles = Role::all();
-        
+
         // Data untuk view
         $data = [
             'users' => $users,
             'roles' => $roles
         ];
-        
+
         return view('superadmin.user.index', compact('data'));
     }
 
     public function create()
     {
         $roles = Role::all();
-        return view('halaman-admin.user.createUser', compact('roles'));
+        return view('superadmin.user.createUser', compact('roles'));
+        
     }
 
     public function store(Request $request)
@@ -95,7 +96,7 @@ class UserController extends Controller
     {
         $user = User::with('roles')->findOrFail($id);
         $roles = Role::all();
-        
+
         return view('superadmin.user.edit', compact('user', 'roles'));
     }
 
@@ -133,7 +134,7 @@ class UserController extends Controller
 
         // Update role
         $role = Role::findById($validated['role']);
-        
+
         // Hapus semua role yang ada kemudian assign role baru
         $user->syncRoles([$role->name]);
 

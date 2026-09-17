@@ -113,6 +113,7 @@ class KelasController extends Controller
             'id_users' => 'nullable|exists:users,id',
             'stt' => 'required|in:tidak_aktif,aktif',
             'nama_kelas' => 'required|string|max:255',
+            'jurusan' => 'required|exists:jurusan,id',
             'id_wakel' => 'nullable|exists:users,id', // Optional, jika
         ]);
 
@@ -127,6 +128,7 @@ class KelasController extends Controller
         $kelas->update([
             'id_users' => $request->id_users,
             'stt' => $request->stt,
+            'id_jurusan' => $request->jurusan,
             'nama_kelas' => $request->nama_kelas,
             'id_wakel' => $request->id_wakel,
         ]);

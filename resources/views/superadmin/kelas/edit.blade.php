@@ -27,7 +27,16 @@
 
                             <h4 class="card-title">SMKN 1 SUMENEP</h4>
                             <p class="card-title-desc">Edit data kelas</p>
-
+                            @if ($errors->any())
+                                <div class="alert alert-danger">
+                                    <ul class="mb-0">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                            
                             <form action="{{ route('kelas.update', $kelas->id) }}" method="POST">
                                 @csrf
                                 @method('PUT')

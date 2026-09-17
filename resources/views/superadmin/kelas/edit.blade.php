@@ -73,7 +73,7 @@
                                             @enderror
                                         </div>
                                     </div>
-        
+
                                     <div class="col-sm-6">
                                         <div class="mb-3">
                                             <label for="id_users" class="form-control-label">{{ __('WALI KELAS') }}</label>
@@ -91,9 +91,9 @@
                                         </div>
                                     </div>
 
-                                    
-                                        
-                                    <div class="col-sm-6">    
+
+
+                                    <div class="col-sm-6">
                                         <div class="mb-3">
                                             <label for="stt" class="form-label">Status</label>
                                             <select id="stt" name="stt" class="form-control" required>

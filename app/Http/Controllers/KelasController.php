@@ -115,8 +115,8 @@ class KelasController extends Controller
             'id_users' => 'nullable|exists:users,id',
             'stt' => 'required|in:tidak_aktif,aktif',
             'nama_kelas' => 'required|string|max:255',
-            'jurusan' => 'required|exists:jurusan,id',
-            'id_wakel' => 'nullable|exists:users,id', // Optional, jika
+            'id_jurusan' => 'required|exists:jurusan,id',
+            'id_wakel' => 'nullable|exists:users,id',
         ]);
 
         // Ambil data kelas
@@ -126,13 +126,12 @@ class KelasController extends Controller
             return redirect()->route('kelas.index')->with('error', 'Data kelas tidak ditemukan.');
         }
 
-        // Update data
         $kelas->update([
-            'id_users' => $request->id_users,
-            'stt' => $request->stt,
-            'id_jurusan' => $request->jurusan,
-            'nama_kelas' => $request->nama_kelas,
-            'id_wakel' => $request->id_wakel,
+            'id_users'    => $request->id_users,
+            'stt'         => $request->stt,
+            'id_jurusan'  => $request->id_jurusan,
+            'nama_kelas'  => $request->nama_kelas,
+            'id_wakel'    => $request->id_wakel,
         ]);
 
         return redirect()->route('kelas.index')->with('success', 'Data kelas berhasil diperbarui.');

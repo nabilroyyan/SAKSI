@@ -18,7 +18,12 @@ class DasboardController extends Controller
         // Data Statistik Utama
         $totalSiswa = Siswa::count();
         $totalKelas = Kelas::count();
-        $totalGuru = User::role('tatip')->count();
+        // Hindari exception jika role tatip belum terdaftar pada guard web.
+        $totalGuru = User::whereHas('roles', function ($query) {
+            $query->where('name', 'tatip')
+                ->where('guard_name', 'web');
+        })->count();
+        $pesanGuru = $totalGuru === 0 ? 'Tidak ada guru tatip' : null;
         $totalBK = User::role('bk')->count();
         
         // Periode Aktif
@@ -72,6 +77,7 @@ class DasboardController extends Controller
             'totalSiswa',
             'totalKelas',
             'totalGuru',
+            'pesanGuru',
             'totalBK',
             'periodeAktif',
             'pelanggaranBulanIni',
